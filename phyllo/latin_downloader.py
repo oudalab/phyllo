@@ -98,6 +98,12 @@ def latin_downloader():
             if href.startswith('/'):
                 href = href[1:]
 
+            # Redirect to a specific index.html
+            # This was made for medieval/
+            if href.endswith('/'):
+                href = "{}.html".format(href)
+                logger.info("expanded href to: {}".format(href))
+
             if "thelatinlibrary" in href:
                 newpageurl = href
             else:
