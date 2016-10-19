@@ -9,9 +9,9 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 | Alcuin |  Ambrosius | [Ammianus Marcellinus](../extractors/ammianusDB.py) :full_moon: | Apicius | [Apuleius](../extractors/apuleiusDB.py) :full_moon: | Aquinas | Asconius | [Augustus](../extractors/augustusDB.py) :full_moon: | 
 | [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | Ausonius | Avianus | Bacon | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
 | [Claudian](../extractors/claudianDB.py) :full_moon: | Claudius Caesar | Columella | [Curtius Rufus](../extractors/curtiusDB.py) :full_moon: | Disticha Catonis | Donatus | Einhard | [Ennius](../extractors/enniusDB.py) :full_moon: |
-| [Eutropius](../extractors/eutropiusDB.py) :full_moon: | Festus | [Florus](../extractors/florusDB.py) :waxing_gibbous_moon: | Frontinus | Gellius | Gregory of Tours | Gregory the Great | Horace |
-| Historia Augusta | Hyginus | Isidore | Jordanes | Julius Obsequens | Justin | Justinian | Juvenal |
-| Lactantius | Livy | Lucan | Lucretius | Manilius | Martial | Minucius Felix | Miscellany |
+| [Eutropius](../extractors/eutropiusDB.py) :full_moon: | Festus | [Florus](../extractors/florusDB.py) :waxing_gibbous_moon: | [Frontinus](../extractors/frontinusDB.py) :full_moon: | Gellius | Gregory of Tours | Gregory the Great | [Horace](../extractors/horaceDB.py) :full_moon: |
+| Historia Augusta | Hyginus | Isidore | Jordanes | Julius Obsequens | [Justin](../extractors/justinDB.py) :waxing_gibbous_moon: | Justinian | [Juvenal](../extractors/juvenalDB.py) :waxing_gibbous_moon: |
+| Lactantius | [Livy](../extractors/livyDB.py) :full_moon: | Lucan | Lucretius | Manilius | Martial | Minucius Felix | Miscellany |
 | Naevius | Nepos | Orosius | [Ovid](../extractors/ovidDB.py) :full_moon: | Persius | Petronius | Phaedrus | Plautus |
 | Pliny the Elder | Pliny the Younger | Poggio Bracciolini | Priapea | Propertius | Prudentius | Quintilian | Roman Epitaphs |
 | Sallust | Seneca | Silius | [Statius](../extractors/statiusDB.py) :full_moon: | Suetonius | Sulpicia | Syrus | Tacitus | 
