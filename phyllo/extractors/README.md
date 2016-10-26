@@ -10,9 +10,9 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 | [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | Ausonius | Avianus | Bacon | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
 | [Claudian](../extractors/claudianDB.py) :full_moon: | Claudius Caesar | Columella | [Curtius Rufus](../extractors/curtiusDB.py) :full_moon: | Disticha Catonis | Donatus | Einhard | [Ennius](../extractors/enniusDB.py) :full_moon: |
 | [Eutropius](../extractors/eutropiusDB.py) :full_moon: | Festus | [Florus](../extractors/florusDB.py) :waxing_gibbous_moon: | [Frontinus](../extractors/frontinusDB.py) :full_moon: | Gellius | Gregory of Tours | Gregory the Great | [Horace](../extractors/horaceDB.py) :full_moon: |
-| Historia Augusta | Hyginus | Isidore | Jordanes | Julius Obsequens | [Justin](../extractors/justinDB.py) :waxing_gibbous_moon: | Justinian | [Juvenal](../extractors/juvenalDB.py) :waxing_gibbous_moon: |
-| Lactantius | [Livy](../extractors/livyDB.py) :full_moon: | Lucan | Lucretius | Manilius | Martial | Minucius Felix | Miscellany |
-| Naevius | Nepos | Orosius | [Ovid](../extractors/ovidDB.py) :full_moon: | Persius | Petronius | Phaedrus | Plautus |
+| Historia Augusta | Hyginus | Isidore | Jordanes | Julius Obsequens | [Justin](../extractors/justinDB.py) :full_moon: | Justinian | [Juvenal](../extractors/juvenalDB.py) :full_moon: |
+| Lactantius | [Livy](../extractors/livyDB.py) :full_moon: | [Lucan](../extractors/lucanDB.py) :full_moon: | [Lucretius](../extractors/lucretiusDB.py) :waxing_gibbous_moon: | Manilius | [Martial](../extractors/martialDB.py) :full_moon: | Minucius Felix | Miscellany |
+| Naevius | [Nepos](../extractors/neposDB.py) :full_moon: | Orosius | [Ovid](../extractors/ovidDB.py) :full_moon: | [Persius](../extractors/persiusDB.py) :full_moon: | [Petronius](../extractors/petroniusDB.py) :full_moon: | [Phaedrus](../extractors/phaedrusDB.py) :waxing_gibbous_moon: | Plautus |
 | Pliny the Elder | Pliny the Younger | Poggio Bracciolini | Priapea | Propertius | Prudentius | Quintilian | Roman Epitaphs |
 | Sallust | Seneca | Silius | [Statius](../extractors/statiusDB.py) :full_moon: | Suetonius | Sulpicia | Syrus | Tacitus | 
 | Terence | Theodosian Code | Tibullus | Valerius Flaccus | Valerius Maximus | Varro | Vegetius | Velleius Paterculus |
