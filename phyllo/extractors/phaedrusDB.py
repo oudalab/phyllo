@@ -22,8 +22,8 @@ def getBooks(soup):
 
 
 def main():
-    # The collection URL below. In this example, we have a link to Cicero.
-    collURL = 'http://www.thelatinlibrary.com/juvenal.html'
+    # The collection URL below.
+    collURL = 'http://www.thelatinlibrary.com/phaedrus.html'
     collOpen = urllib.request.urlopen(collURL)
     collSOUP = BeautifulSoup(collOpen, 'html5lib')
     author = collSOUP.title.string.strip()
@@ -34,7 +34,7 @@ def main():
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Juvenal'")
+        c.execute("DELETE FROM texts WHERE author = 'Phaedrus'")
 
         for url in textsURL:
             chapter = -1
@@ -45,7 +45,8 @@ def main():
                 title = textsoup.title.string.split(':')[1].strip()
             except:
                 title = textsoup.title.string.strip()
-            title = title.replace('Juvenal','Satura')
+            if title != 'Phaedrus Appendix':
+                title = title.replace('Phaedrus','Liber')
             getp = textsoup.find_all('p')
             for p in getp:
                 # make sure it's not a paragraph without the main text
