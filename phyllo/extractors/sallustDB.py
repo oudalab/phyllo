@@ -5,6 +5,9 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from phyllo_logger import logger
 
+###########
+# Letters to Caesar are not split by sentences.
+
 # Case 2: Sections are split by <p> tags and subsections by sentences.
 # Bellum Iugurthinum
 def altparsecase2(ptags, c, colltitle, title, author, date, URL):
@@ -29,7 +32,7 @@ def altparsecase2(ptags, c, colltitle, title, author, date, URL):
             continue
         # using negative lookbehind assertion to not match with abbreviations of one or two letters and ellipses.
         # ellipses are not entirely captured, but now it doesn't leave empty cells in the database.
-        text = re.split('\[([0-9]+)\]|(?<!\s[A-Z])\.\s(?!\.\s)', text)
+        text = re.split('\[([0-9]+)\]|(?<!\s[A-Z]|[A-Z][a-z])\.\s(?!\.\s)', text)
         for element in text:
             if element is None or element == '' or element.isspace():
                 text.remove(element)
@@ -42,14 +45,14 @@ def altparsecase2(ptags, c, colltitle, title, author, date, URL):
                 verse = 0
                 continue
             verse+=1
-            passage = item
+            passage = item.strip()
             c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                       (None, colltitle, title, 'Latin', author, date, chapter,
                        verse, passage.strip(), URL, 'prose'))
 
 
 # Case 3: Chapters separated by un/bracketed numbers, similarly to sentences.
-# Bellum Catilinae
+# Bellum Catilinae, Oratio Lepidi, Oratio Phillipi
 def parsecase3(ptags, c, colltitle, title, author, date, URL):
     chapter = -1
     verse = -1
@@ -71,7 +74,8 @@ def parsecase3(ptags, c, colltitle, title, author, date, URL):
             text = re.split('([0-9]+)\s|\[([IVX]+)\]\s|\[([0-9]+)\]\s', text)
         else:
             text = re.split('([IVX]+)\.\s|([0-9]+)\s|\[([IVX]+)\]\s|\[([0-9]+)\]\s', text)
-
+        if title.endswith("Lepidus") or title.endswith("Philippus"):
+            chapter = int(chapter) + 1
         for item in text:
             if item is None:
                 continue
@@ -88,6 +92,8 @@ def parsecase3(ptags, c, colltitle, title, author, date, URL):
                         chapter = int(chapter) + 1
             elif len(item) < 5 and isnumeral and title.startswith("Letter to Caesar"):
                 chapter = item
+                if title.startswith("Letter to"):
+                    verse = 0
             else:
                 passage = item
                 # Remove brackets if they have been picked up.
@@ -100,6 +106,8 @@ def parsecase3(ptags, c, colltitle, title, author, date, URL):
                     passage = passage[1:]
                 if passage == chapter:
                     continue
+                if title.startswith("Letter to"):
+                    verse += 1
                 c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                           (None, colltitle, title, 'Latin', author, date, chapter,
                            verse, passage.strip(), URL, 'prose'))
@@ -135,6 +143,139 @@ def case3isNumeral(ptags):
             return False
         else:
             return True
+
+
+# Alternative Case 3: Chapters are split by [numbers] and sentences by unbracketed number
+# Fragmenta
+def altcase3(ptags, c, colltitle, title, author, date, URL):
+    chapter = -1
+    verse = 1
+    for p in ptags:
+        # make sure it's not a paragraph without the main text
+        try:
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                         'internal_navigation']:  # these are not part of the main t
+                continue
+        except:
+            pass
+        passage = ''
+        text = p.get_text().strip()
+        # Skip empty paragraphs.
+        if len(text) <= 0:
+            continue
+        # check if chapter is in the paragraph tag
+        potchap = p.find('b')
+        if potchap is not None:
+            chapter = text
+            verse = 1
+            continue
+        # split the paragraph by chapter: [#] -- it's always at the front of the line
+        text = re.split('^\[([0-9]+)\]', text)
+        try: text.remove('')
+        except: pass
+        if text[0].isnumeric():
+            # overwrites bold chapters.
+            chapter = text[0]
+            # if the paragraph has a chapter number, the next item may have numbers to delimit subsections
+            passage = re.split('([0-9]+)', text[1])
+        else:
+            # alternatively, it may not have a chapter number.
+            passage = re.split('([0-9]+)', text[0])
+
+        try: passage.remove('')
+        except: pass
+        for item in passage:
+            if item is None or item.isspace() or item == '':
+                continue
+            elif item.strip().isnumeric():
+                verse = item.strip()
+            else:
+                # not sure where the \n came from but I gotta' replace 'em
+                item = item.replace('\n', ' ')
+                # item must be a bunch of words
+                c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                          (None, colltitle, title, 'Latin', author, date, chapter,
+                           verse, item.strip(), URL, 'prose'))
+
+
+# there are no numbers. Sections are split by <p> tags, subsections by punctuation.
+# Note: For Speech of Pompey, the last paragraph has verse 0s because they are unassigned.
+def parsecase4(ptags, c, colltitle, title, author, date, URL):
+    # ptags contains all <p> tags. c is the cursor object.
+    chapter = 0
+    verse = '-1'
+    hasversenum = False
+    # entry deletion is done in main()
+    for p in ptags:
+        # make sure it's not a paragraph without the main text
+        try:
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                         'internal_navigation']:  # these are not part of the main t
+                continue
+        except:
+            pass
+        passage = ''
+        text = p.get_text().strip()
+        if text.startswith("SallustThe"):
+            continue
+        # various special things to exclude one- and two-letter abbreviations from the dot parsing
+        text = re.split('([0-9]+)|(?<!\s[A-Z]|[A-Z][a-z])\.\s(?!\.\s)', text)
+        chapter+=1 # each section is a paragraph
+        verse = 0 # reset each verse; overwritten by subsection number if available
+        try: text.remove('')
+        except: pass
+        for item in text:
+            if item is None or item.isspace():
+                continue
+            if item.isnumeric():
+                verse = item # overwrites verse reset
+                hasversenum = True
+                continue
+            if hasversenum is False:
+                verse += 1
+            if item.strip() == '' or item.strip().isspace():
+                continue
+            c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                      (None, colltitle, title, 'Latin', author, date, chapter,
+                       verse, item.strip(), URL, 'prose'))
+
+
+# Parse Cicero - Chapters are bolded, subsections/verses are prefixed by unbracketed numbers.
+def parsecase5(ptags, c, colltitle, title, author, date, URL):
+    # ptags contains all <p> tags. c is the cursor object.
+    chapter = 0
+    verse = 0
+    hasversenum = False
+    # entry deletion is done in main()
+    for p in ptags:
+        # make sure it's not a paragraph without the main text
+        try:
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                         'internal_navigation']:  # these are not part of the main t
+                continue
+        except:
+            pass
+        passage = ''
+        text = p.get_text().strip()
+        if text.startswith("SallustThe"):
+            continue
+        potchap = p.find('b')
+        if potchap is not None:
+            chapter = potchap.find(text=True)
+            text = text.replace(chapter,'')
+        text = re.split('([0-3])\.\s', text)
+        try: text.remove('')
+        except: pass
+        for item in text:
+            if item is None or item.isspace():
+                continue
+            item = item.strip()
+            if item.isnumeric():
+                verse = item
+                continue
+            c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                      (None, colltitle, title, 'Latin', author, date, chapter,
+                       verse, item, URL, 'prose'))
 
 
 def getBooks(soup):
@@ -179,6 +320,13 @@ def main():
             # finally, pick ONE case to parse with.
             if title.endswith("Iugurthinum"):
                 altparsecase2(getp, c, colltitle, title, author, date, url)
+            elif title.endswith("Fragmenta"):
+                altcase3(getp, c, colltitle, title, author, date, url)
+            elif title.endswith("Cotta") or title.endswith("Pompey") or title.endswith("Macer")\
+                    or title.endswith("Mithridates"):
+                parsecase4(getp,c, colltitle, title, author, date, url)
+            elif title.endswith("Cicero"):
+                parsecase5(getp, c, colltitle, title, author, date, url)
             else:
                 parsecase3(getp, c, colltitle, title, author, date, url)
 

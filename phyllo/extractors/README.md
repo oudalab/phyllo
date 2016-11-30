@@ -14,7 +14,7 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 | Lactantius | [Livy](../extractors/livyDB.py) :full_moon: | [Lucan](../extractors/lucanDB.py) :full_moon: | [Lucretius](../extractors/lucretiusDB.py) :waxing_gibbous_moon: | Manilius | [Martial](../extractors/martialDB.py) :full_moon: | Minucius Felix | Miscellany |
 | Naevius | [Nepos](../extractors/neposDB.py) :full_moon: | Orosius | [Ovid](../extractors/ovidDB.py) :full_moon: | [Persius](../extractors/persiusDB.py) :full_moon: | [Petronius](../extractors/petroniusDB.py) :full_moon: | [Phaedrus](../extractors/phaedrusDB.py) :waxing_gibbous_moon: | Plautus |
 | [Pliny the Elder](../extractors/plinymaiorDB.py) :full_moon: | [Pliny the Younger](../extractors/plinyminorDB.py) :full_moon: | Poggio Bracciolini | Priapea | [Propertius](../extractors/propertiusDB.py) :full_moon: | Prudentius | [Quintilian](../extractors/quintilianDB.py) :full_moon: | Roman Epitaphs |
-| [Sallust](../extractors/sallustDB.py) :last_quarter_moon: | Seneca | Silius | [Statius](../extractors/statiusDB.py) :full_moon: | Suetonius | Sulpicia | Syrus | Tacitus | 
+| [Sallust](../extractors/sallustDB.py) :full_moon: | Seneca | Silius | [Statius](../extractors/statiusDB.py) :full_moon: | Suetonius | Sulpicia | Syrus | Tacitus | 
 | Terence | Theodosian Code | Tibullus | Valerius Flaccus | Valerius Maximus | Varro | Vegetius | Velleius Paterculus |
 | Virgil | Vitruvius |   |   |   |   |   |   |
 
@@ -57,3 +57,14 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 | Petrarch | Piccolomini | Pontano | Poggio Bracciolini | Poree | Pseudoplatonica | Rimbaud | Ruaeus' Aeneid |
 | Sannazaro | Scaliger | Spinoza | Theophanes | Tünger | Vallauri | Vegius | Vico |
 | Vida | Waardenburg | Johann H. Withof | Johann P. L. Withof | Xylander |   |   |   | 
+
+### Parsing
+Much of prose is separated by sections (chapters) and subsections (verses). Occasionally, the HTML prefixes the subsections with a number. With the recent Sallust, we've been able to construct a regular expression that can separate a block of text into sentences (via punctuation) without ruining the abbreviations.
+Listed below are collections - works where this regular expression is used. This does not include other files (few in number) that split blocks into sentences via full-stop.
+| Collection | Work |
+|:==========:|:=====|
+| Sallust | Bellum Iugurthinum |
+| Sallust | Oratio Cotta |
+| Sallust | Epistula Pompei |
+| Sallust | Oratio Macri |
+| Sallust | Epistula Mithridates |
