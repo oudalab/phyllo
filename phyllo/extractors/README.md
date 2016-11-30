@@ -62,7 +62,7 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 Much of prose is separated by sections (chapters) and subsections (verses). Occasionally, the HTML prefixes the subsections with a number. With the recent Sallust, we've been able to construct a regular expression that can separate a block of text into sentences (via punctuation) without ruining the abbreviations.
 Listed below are collections - works where this regular expression is used. This does not include other files (few in number) that split blocks into sentences via full-stop.
 | Collection | Work |
-|:----------:|:-----|
+|:----------:|:----------- |
 | Sallust | Bellum Iugurthinum |
 | Sallust | Oratio Cotta |
 | Sallust | Epistula Pompei |
