@@ -46,22 +46,16 @@ def main():
             except:
                 title = textsoup.title.string.strip()
             if title != 'Phaedrus Appendix':
-                title = title.replace('Phaedrus','Liber')
+                title = title.replace('Phaedrus', 'Liber')
             getp = textsoup.find_all('p')
-            for p in getp:
-                # make sure it's not a paragraph without the main text
-                try:
-                    if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
-                                                 'internal_navigation']:  # these are not part of the main t
-                        continue
-                except:
-                    pass
-                # find chapter
-                chapter_f = p.find('b')
-                if chapter_f is not None:
-                    chapter = p.get_text().strip()
-                    continue
-                else:
+            if url.endswith("app.html"):
+                for p in getp:
+                    try:
+                        if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                                     'internal_navigation']:  # these are not part of the main t
+                            continue
+                    except:
+                        pass
                     brtags = p.findAll('br')
                     verses = []
                     try:
@@ -76,16 +70,78 @@ def main():
                         try:
                             text = br.next_sibling.next_sibling.strip()
                         except:
-                            text = br.next_sibling.strip()
+                            try: text = br.next_sibling.strip()
+                            except: text = ''
                         if text is None or text == '' or text.isspace():
                             continue
                         verses.append(text)
-                for v in verses:
-                    # verse number assignment.
-                    verse += 1
-                    c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                              (None, colltitle, title, 'Latin', author, date, chapter,
-                               verse, v, url, 'poetry'))
+                    ptext = '\n'.join(verses)
+                    chapter_f = p.find('b')
+                    if chapter_f is not None:
+                        verse = 0
+                        testchapter = chapter_f.find(text=True)
+                        if testchapter.isspace() or testchapter == '':
+                            pass
+                        else:
+                            chapter = testchapter
+                        ptext = ptext.replace(chapter,'')
+                        if ptext != '' or not ptext.isspace():
+                            ptext = re.split('\n', ptext)
+                        else:
+                            continue
+                    else:
+                        ptext = re.split('\n', ptext)
+                    for line in ptext:
+                        if line == '' or line.isspace() or line is None:
+                            continue
+                        elif line.startswith("Phaedrus\n"):
+                            continue
+                        else:
+                            verse += 1
+                            c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                                      (None, colltitle, title, 'Latin', author, date, chapter,
+                                       verse, line, url, 'poetry'))
+
+
+            else:
+                for p in getp:
+                    # make sure it's not a paragraph without the main text
+                    try:
+                        if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                                     'internal_navigation']:  # these are not part of the main t
+                            continue
+                    except:
+                        pass
+                    # find chapter
+                    chapter_f = p.find('b')
+                    if chapter_f is not None:
+                        chapter = p.get_text().strip()
+                        continue
+                    else:
+                        brtags = p.findAll('br')
+                        verses = []
+                        try:
+                            try:
+                                firstline = brtags[0].previous_sibling.strip()
+                            except:
+                                firstline = brtags[0].previous_sibling.previous_sibling.strip()
+                            verses.append(firstline)
+                        except:
+                            pass
+                        for br in brtags:
+                            try:
+                                text = br.next_sibling.next_sibling.strip()
+                            except:
+                                text = br.next_sibling.strip()
+                            if text is None or text == '' or text.isspace():
+                                continue
+                            verses.append(text)
+                    for v in verses:
+                        # verse number assignment.
+                        verse += 1
+                        c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                                  (None, colltitle, title, 'Latin', author, date, chapter,
+                                   verse, v, url, 'poetry'))
 
 
 

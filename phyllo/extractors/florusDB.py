@@ -11,19 +11,41 @@ def parsecase1(ptags, c, colltitle, title, author, date, URL):
     # ptags contains all <p> tags. c is the cursor object.
     chapter = '-1'
     verse = 1
+    chaplist = []
     # entry deletion is done in main()
     for p in ptags:
         # make sure it's not a paragraph without the main text
         try:
-            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
-                                         'internal_navigation']:  # these are not part of the main t
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin']:  # these are not part of the main t
+                continue
+        except:
+            pass
+        try: #throws error even though it's supposed to work
+            if p['class'][0].lower in ['internal_navigation']:
+                brtags = p.findAll('br')
+                try:
+                    try:
+                        firstline = brtags[0].previous_sibling.strip()
+                    except:
+                        firstline = brtags[0].previous_sibling.previous_sibling.strip()
+                    chaplist.append(firstline)
+                except:
+                    pass
+                for br in brtags:
+                    try:
+                        text = br.next_sibling.next_sibling.strip()
+                    except:
+                        text = br.next_sibling.strip()
+                    if text is None or text == '' or text.isspace():
+                        continue
+                    chaplist.append(text)
                 continue
         except:
             pass
         passage = ''
         text = p.get_text().strip()
         # Skip empty paragraphs.
-        if len(text) <= 0 or text.startswith('Cicero\n'):
+        if len(text) <= 0 or text.startswith('Florus\n'):
             continue
         text = re.split('^([IVX]+)\.\s|^([0-9]+)\.\s|^\[([IVXL]+)\]\s|^\[([0-9]+)\]\s', text)
         for element in text:
@@ -45,6 +67,14 @@ def parsecase1(ptags, c, colltitle, title, author, date, URL):
             verse+=1
         if passage.startswith('Florus'):
             continue
+        # chapter correction
+        for ch in chaplist:
+            if ch.startswith(chapter):
+                chapter = ch
+        try:
+            chaplist.remove(chapter) # should always make loop best case scenario
+        except:
+            pass
         c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                   (None, colltitle, title, 'Latin', author, date, chapter,
                    verse, passage.strip(), URL, 'prose'))
