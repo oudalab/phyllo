@@ -2,6 +2,7 @@
 import json
 
 import search
+import phyllo  # phyllo must be installed
 
 from flask import Flask
 app = Flask(__name__)

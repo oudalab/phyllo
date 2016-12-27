@@ -8,9 +8,10 @@ MAINTAINER Christan Grant <cgrant@ou.edu>
 RUN apk update
 RUN apk add git curl vim strace tmux htop tar make
 RUN apk add python3-dev tcl-dev gcc g++ libffi-dev
+RUN apk add bash
 
 RUN pip3 install --upgrade pip &&\
-		pip3 install apsw nltk cltk flask
+		pip3 install apsw nltk cltk flask beautifulsoup4 ipython html5lib
 
 RUN pip3 install sqlitefts
 
@@ -20,9 +21,10 @@ COPY ./search/buildcode.sh /src
 COPY ./search/app.py /src
 COPY ./search/search.py /src
 
-RUN cd /src && sh buildcode.sh
+RUN cd /src && bash buildcode.sh
 
-ADD ./phyllo /usr/local/bin
+ADD . /phyllo 
+RUN cd /phyllo && pip3 install .
 
 EXPOSE 5000
 WORKDIR /src

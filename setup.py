@@ -2,17 +2,19 @@ from setuptools import setup
 
 setup(
     name="phyllo",
-    packages=["phyllo"],
-    version="0.0.1",
+    version="0.1",
     description="PHilologicallY Linguistic LegwOrk.",
     author="Christan Grant",
     author_email="cgrant@ou.edu",
     url="https://github.com/oudalab/phyllo",
     download_url="https://github.com/oudalab/phyllo",
+    license='GPLv3',
+    packages=["phyllo", "phyllo.extractors"],
     keywords=["latin", "search"],
     install_requires=[
         "cltk",
-        "sqlite3"
+        "beautifulsoup4",
+        "html5lib"
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],

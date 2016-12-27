@@ -3,10 +3,10 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 
-def parseRes2(getp, title, url, c):
+def parseRes2(getp, title, url, c, author, date, collectiontitle):
     chapter = '-'
     tabulacount = 0
     for p in getp:
@@ -70,37 +70,41 @@ def parseRes2(getp, title, url, c):
                           (None, collectiontitle, title, 'Latin', author, date, chapter,
                            '-', ptext, url, 'prose'))
 
+def main():
+    # get proper URLs
+    siteURL = 'http://www.thelatinlibrary.com'
+    augURL = 'http://www.thelatinlibrary.com/aug.html'
+    augOPEN = urllib.request.urlopen(augURL)
+    augSOUP = BeautifulSoup(augOPEN, 'html5lib')
+    textsURL = []
 
-# get proper URLs
-siteURL = 'http://www.thelatinlibrary.com'
-augURL = 'http://www.thelatinlibrary.com/aug.html'
-augOPEN = urllib.request.urlopen(augURL)
-augSOUP = BeautifulSoup(augOPEN, 'html5lib')
-textsURL = []
+    for a in augSOUP.find_all('a', href=True):
+        link = a['href']
+        textsURL.append("{}/{}".format(siteURL, a['href']))
 
-for a in augSOUP.find_all('a', href=True):
-    link = a['href']
-    textsURL.append("{}/{}".format(siteURL, a['href']))
+    # remove some unnecessary urls
+    while ("http://www.thelatinlibrary.com/index.html" in textsURL):
+        textsURL.remove("http://www.thelatinlibrary.com/index.html")
+        textsURL.remove("http://www.thelatinlibrary.com/classics.html")
+    logger.info("\n".join(textsURL))
 
-# remove some unnecessary urls
-while ("http://www.thelatinlibrary.com/index.html" in textsURL):
-    textsURL.remove("http://www.thelatinlibrary.com/index.html")
-    textsURL.remove("http://www.thelatinlibrary.com/classics.html")
-logger.info("\n".join(textsURL))
+    author = augSOUP.title.string
+    author = author.strip()
+    collectiontitle = augSOUP.h1.contents[0].strip()
+    date = augSOUP.h2.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
 
-author = augSOUP.title.string
-author = author.strip()
-collectiontitle = augSOUP.h1.contents[0].strip()
-date = augSOUP.h2.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
+    with sqlite3.connect('texts.db') as db:
+        c = db.cursor()
+        c.execute("DELETE FROM texts WHERE author = 'Augustus'")
+        for u in textsURL:
+            uOpen = urllib.request.urlopen(u)
+            gestSoup = BeautifulSoup(uOpen, 'html5lib')
+            title = gestSoup.title.string.split(':')
+            title = title[-1].strip()
 
-with sqlite3.connect('texts.db') as db:
-    c = db.cursor()
-    c.execute("DELETE FROM texts WHERE author = 'Augustus'")
-    for u in textsURL:
-        uOpen = urllib.request.urlopen(u)
-        gestSoup = BeautifulSoup(uOpen, 'html5lib')
-        title = gestSoup.title.string.split(':')
-        title = title[-1].strip()
+            getp = gestSoup.find_all('p')[:-1]
+            parseRes2(getp, title, u, c, author, date, collectiontitle)
 
-        getp = gestSoup.find_all('p')[:-1]
-        parseRes2(getp, title, u, c)
+
+if __name__ == '__main__':
+    main()

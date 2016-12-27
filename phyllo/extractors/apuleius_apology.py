@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # A function to put entries in the table.
 # Note that this table only contains Chapter, Verse, and Passage for testing purposes.
