@@ -26,7 +26,12 @@ def main():
             # Skip empty paragraphs.
             if len(text) <= 0 or text.startswith('Cicero\n'):
                 continue
-            text = re.split('^([IVX]+)\.\s|^([0-9]+)\.\s|^\[([IVXL]+)\]\s|^\[([0-9]+)\]\s', text)
+            if url.endswith('nd3.shtml'):  # isolate nd3 so we don't accidentally bug out the others
+                text = re.split('^([IVX]+)\.\s|^([0-9]+)\.\s|^\[([IVXL]+)\]|^\[([0-9]+)\]\s', text)
+            else:
+                text = re.split(
+                    '^([IVX]+)\.\s|^([0-9]+)\.\s|^\[([IVXL]+)\]\s|^\[([0-9]+)\]\s|^\[\s([0-9]+)\]|^\[([0-9]+)',
+                    text)
             for element in text:
                 if element is None or element == '' or element.isspace():
                     text.remove(element)
@@ -231,6 +236,8 @@ def main():
                             verse = element
                         else:
                             passage = element
+                            if passage.startswith("Cicero\n"):
+                                continue
                             c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                       (None, colltitle, title, 'Latin', author, date, chapter,
                                        verse, passage, URL, 'prose'))
@@ -315,6 +322,24 @@ def main():
         return textsURL
 
 
+    # for nested hyperlinked works
+    def altgetbook(soup):
+        textsURL = []
+        siteURL = "http://www.thelatinlibrary.com/cicero"
+        # get links to books in the collection
+        for a in soup.find_all('a', href=True):
+            link = a['href']
+            textsURL.append("{}/{}".format(siteURL, a['href']))
+
+        # remove unnecessary URLs
+        while ("http://www.thelatinlibrary.com/cicero//index.html" in textsURL):
+            textsURL.remove("http://www.thelatinlibrary.com/cicero//index.html")
+            textsURL.remove("http://www.thelatinlibrary.com/cicero//cic.html")
+            textsURL.remove("http://www.thelatinlibrary.com/cicero//classics.html")
+        logger.info("\n".join(textsURL))
+        return textsURL
+
+
 # main code
     siteURL = 'http://www.thelatinlibrary.com'
     ciceroURL = 'http://www.thelatinlibrary.com/cic.html'
@@ -379,7 +404,6 @@ def main():
                   'http://www.thelatinlibrary.com/cicero/phil.shtml',
                   'http://www.thelatinlibrary.com/cicero/inventione.shtml',
                   'http://www.thelatinlibrary.com/cicero/oratore.shtml',
-                  'http://www.thelatinlibrary.com/cicero/repub.shtml',
                   'http://www.thelatinlibrary.com/cicero/leg.shtml',
                   'http://www.thelatinlibrary.com/cicero/fin.shtml',
                   'http://www.thelatinlibrary.com/cicero/tusc.shtml',
@@ -387,11 +411,44 @@ def main():
                   'http://www.thelatinlibrary.com/cicero/divinatione.shtml',
                   'http://www.thelatinlibrary.com/cicero/off.shtml'
                   ]
+    #notes: repub uses parenthesis instead of brackets; apparently there are two repub.shtml
+    # leg is some kind of play
+    # tusc has numbers by itself.
+    # divinatione is truly a nightmare
+    # caecilium, phillipic, oratore, milone and/or cluentio-oratio, plancio, sestio might/n't need a new case
+
     poemList = ['http://www.thelatinlibrary.com/cicero/repub.shtml']
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
         c.execute("DELETE FROM texts WHERE author='Cicero'")
+
+        for url in getURLList:
+            openu = urllib.request.urlopen(url)
+            soup = BeautifulSoup(openu, 'html5lib')
+            urltexts = getBooks(soup)
+            for urlt in urltexts:
+                openurl = urllib.request.urlopen(url)
+                textsoup = BeautifulSoup(openurl, 'html5lib')
+                try:
+                    title = textsoup.title.string.split(':')[1].strip()
+                except:
+                    title = textsoup.title.string.strip()
+                getp = textsoup.find_all('p')
+                # url refers to the url of the collection's  collection. urlt is the url that the text/passages are found
+                if url.endswith("legagr.shtml") or urlt.endswith("caecilium.shtml") or url.endswith("cat.shtml") \
+                        or url.endswith('phil.shtml') or url.endswith('oratore.shtml') or urlt.endswith("fin1.shtml") \
+                        or urlt.endswith('fin2.shtml') or urlt.endswith('fin3.shtml') or (
+                    url.endswith('nd.shtml') and not
+                urlt.endswith('nd3.shtml')):
+                    parsecase2(getp, c, colltitle, title, author, date, urlt)
+                elif (url.endswith("ver.shtml") and not urlt.endswith('caecilium.shtml')) or url.endswith(
+                        'inventione.shtml') \
+                        or urlt.endswith('nd3.shtml') or url.endswith('off.shtml'):
+                    parsecase1(getp, c, colltitle, title, author, date, urlt)
+                elif urlt.endswith('fin4.shtml') or urlt.endswith('fin5.shtml'):
+                    parsecase3(getp, c, colltitle, title, author, date, urlt)
+
         for url in textsURL:
             openurl = urllib.request.urlopen(url)
             textsoup = BeautifulSoup(openurl, 'html5lib')
@@ -414,6 +471,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
