@@ -14,7 +14,7 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 | Lactantius | [Livy](../extractors/livyDB.py) :full_moon: | [Lucan](../extractors/lucanDB.py) :full_moon: | [Lucretius](../extractors/lucretiusDB.py) :waxing_gibbous_moon: | Manilius | [Martial](../extractors/martialDB.py) :full_moon: | Minucius Felix | Miscellany |
 | Naevius | [Nepos](../extractors/neposDB.py) :full_moon: | Orosius | [Ovid](../extractors/ovidDB.py) :full_moon: | [Persius](../extractors/persiusDB.py) :full_moon: | [Petronius](../extractors/petroniusDB.py) :full_moon: | [Phaedrus](../extractors/phaedrusDB.py) :full_moon: | Plautus |
 | [Pliny the Elder](../extractors/plinymaiorDB.py) :full_moon: | [Pliny the Younger](../extractors/plinyminorDB.py) :full_moon: | Poggio Bracciolini | Priapea | [Propertius](../extractors/propertiusDB.py) :full_moon: | Prudentius | [Quintilian](../extractors/quintilianDB.py) :full_moon: | Roman Epitaphs |
-| [Sallust](../extractors/sallustDB.py) :full_moon: | Seneca | Silius | [Statius](../extractors/statiusDB.py) :full_moon: | Suetonius | Sulpicia | Syrus | Tacitus | 
+| [Sallust](../extractors/sallustDB.py) :full_moon: | [Seneca Maior](../extractors/senecaMaiorDB.py) :full_moon: | [Silius](../extractors/siliusDB.py) :full_moon: | [Statius](../extractors/statiusDB.py) :full_moon: | Suetonius | [Sulpicia](../extractors/sulpiciaDB.py) :full_moon: | Syrus | [Tacitus](../extractors/tacitusDB.py) :full_moon: | 
 | Terence | Theodosian Code | Tibullus | Valerius Flaccus | Valerius Maximus | Varro | Vegetius | Velleius Paterculus |
 | Virgil | Vitruvius |   |   |   |   |   |   |
 
