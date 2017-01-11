@@ -6,7 +6,7 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 #### Latin
 |       |       |       |       |       |       |       |       |
 |:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|
-| Alcuin |  Ambrosius | [Ammianus Marcellinus](../extractors/ammianusDB.py) :full_moon: | Apicius | [Apuleius](../extractors/apuleiusDB.py) :full_moon: | Aquinas | Asconius | [Augustus](../extractors/augustusDB.py) :full_moon: | 
+|   |   | [Ammianus Marcellinus](../extractors/ammianusDB.py) :full_moon: | Apicius | [Apuleius](../extractors/apuleiusDB.py) :full_moon: | Aquinas | Asconius | [Augustus](../extractors/augustusDB.py) :full_moon: | 
 | [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | Ausonius | Avianus | Bacon | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
 | [Claudian](../extractors/claudianDB.py) :full_moon: | Claudius Caesar | Columella | [Curtius Rufus](../extractors/curtiusDB.py) :full_moon: | Disticha Catonis | Donatus | Einhard | [Ennius](../extractors/enniusDB.py) :full_moon: |
 | [Eutropius](../extractors/eutropiusDB.py) :full_moon: | Festus | [Florus](../extractors/florusDB.py) :waxing_gibbous_moon: | [Frontinus](../extractors/frontinusDB.py) :full_moon: | Gellius | Gregory of Tours | Gregory the Great | [Horace](../extractors/horaceDB.py) :full_moon: |
@@ -21,7 +21,7 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 #### Christian
 |       |       |       |       |       |       |       |       |
 |:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:| 
-| [Abelard](../extractors/abelardDB.py) :full_moon: | Alcuin | Ambrose | Anselm | Aquinas | Arnobius | Arnulf of Lisieux | Augustine | 
+| [Abelard](../extractors/abelardDB.py) :full_moon: | [Alcuin](../extractors/alcuinDB.py) :full_moon: | [Ambrose](..extractors/ambrosiusDB.py) :full_moon: | Anselm | Aquinas | Arnobius | Arnulf of Lisieux | Augustine | 
 | Bede | Benedict | Berengar | Bernard of Clairvaux | Bernard of Cluny | Biblia Sacra | Bonaventure | Carmen de Martyrio |
 | [Cassiodorus](../extractors/cassiodorusDB.py) :full_moon: | Christian Creeds | Commodianus | Decretum Gelasianum | Dies Irae | Egeria | Ennodius | Eucherius |
 | Eugippius | Gregorius Magnus | Gregory VII | Gregory IX | [Hugo of St. Victor](../extractors/hugoDB.py) :full_moon: | Hydatius | Hymni et cantica | Iacobus de Voragine |
@@ -60,12 +60,16 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 
 ### Parsing
 Much of prose is separated by sections (chapters) and subsections (verses). Occasionally, the HTML prefixes the subsections with a number. With the recent Sallust, we've been able to construct a regular expression that can separate a block of text into sentences (via punctuation) without ruining the abbreviations.
-Listed below are collections - works where this regular expression is used. This does not include other files (few in number) that split blocks into sentences via full-stop.
+Listed below are collections - works where this regular expression is used. This does not include other files (few in number) that split blocks into sentences via full-stop. Works with an asterisk (*) show the potential of where this regular expression could be used, but is in fact not used.
 
-| Collection | Work                 |
-|:----------:|:-------------------- |
-| Sallust    | Bellum Iugurthinum   |
-| Sallust    | Oratio Cotta         |
-| Sallust    | Epistula Pompei      |
-| Sallust    | Oratio Macri         |
-| Sallust    | Epistula Mithridates |
+| Collection | Work                     |
+|:----------:|:------------------------ |
+| Alcuin     | Letter of Recommendation |
+| Ambrosius  | Epistula ad Sororem      |
+| Sallust    | Bellum Iugurthinum       |
+| Sallust    | Oratio Cotta             |
+| Sallust    | Epistula Pompei          |
+| Sallust    | Oratio Macri             |
+| Sallust    | Epistula Mithridates     |
+| Suetonius  | *Crispus                 |
+| Suetonius  | *Pliny                   |
