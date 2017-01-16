@@ -17,10 +17,10 @@ def tokenize():
         c = connection.cursor()
         fts.register_tokenizer(c, 'oulatin', fts.make_tokenizer_module(OUWordTokenizer('latin')))
         c.create("CREATE VIRTUAL TABLE text_idx USING fts4 (id, title, book, author, date, chapter, "
-                 "verse, package, link, documentType, tokenize={}".format("oulatin"))
+                 "verse, passage, link, documentType, tokenize={}".format("oulatin"))
         c.execute("INSERT INTO text_idx (id title, book, author, date, chapter, "
-                 "verse, package, link, documentType) SELECT id, title, book, author, date, chapter, "
-                 "verse, package, link, documentType FROM texts")
+                 "verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, "
+                 "verse, passage, link, documentType FROM texts")
 
 
 @app.route('/')
