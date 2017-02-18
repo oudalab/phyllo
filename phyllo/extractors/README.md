@@ -6,17 +6,19 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 #### Latin
 |       |       |       |       |       |       |       |       |
 |:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|
-|   |   | [Ammianus Marcellinus](../extractors/ammianusDB.py) :full_moon: | Apicius | [Apuleius](../extractors/apuleiusDB.py) :full_moon: | Aquinas | Asconius | [Augustus](../extractors/augustusDB.py) :full_moon: | 
-| [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | Ausonius | Avianus | Bacon | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
+|   |   | [Ammianus Marcellinus](../extractors/ammianusDB.py) :full_moon: | [Apicius](../extractors/apiciusDB.py) | [Apuleius](../extractors/apuleiusDB.py) :full_moon: | Aquinas | [Asconius](../extractors/asconiusDB.py) :waxing_gibbous_moon: | [Augustus](../extractors/augustusDB.py) :full_moon: | 
+| [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | [Ausonius] :first_quarter_moon: | Avianus | [Bacon] :first_quarter_moon: | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
 | [Claudian](../extractors/claudianDB.py) :full_moon: | Claudius Caesar | Columella | [Curtius Rufus](../extractors/curtiusDB.py) :full_moon: | Disticha Catonis | Donatus | Einhard | [Ennius](../extractors/enniusDB.py) :full_moon: |
 | [Eutropius](../extractors/eutropiusDB.py) :full_moon: | Festus | [Florus](../extractors/florusDB.py) :waxing_gibbous_moon: | [Frontinus](../extractors/frontinusDB.py) :full_moon: | Gellius | Gregory of Tours | Gregory the Great | [Horace](../extractors/horaceDB.py) :full_moon: |
 | Historia Augusta | Hyginus | Isidore | Jordanes | Julius Obsequens | [Justin](../extractors/justinDB.py) :full_moon: | Justinian | [Juvenal](../extractors/juvenalDB.py) :full_moon: |
 | Lactantius | [Livy](../extractors/livyDB.py) :full_moon: | [Lucan](../extractors/lucanDB.py) :full_moon: | [Lucretius](../extractors/lucretiusDB.py) :waxing_gibbous_moon: | Manilius | [Martial](../extractors/martialDB.py) :full_moon: | Minucius Felix | Miscellany |
 | Naevius | [Nepos](../extractors/neposDB.py) :full_moon: | Orosius | [Ovid](../extractors/ovidDB.py) :full_moon: | [Persius](../extractors/persiusDB.py) :full_moon: | [Petronius](../extractors/petroniusDB.py) :full_moon: | [Phaedrus](../extractors/phaedrusDB.py) :full_moon: | Plautus |
-| [Pliny the Elder](../extractors/plinymaiorDB.py) :full_moon: | [Pliny the Younger](../extractors/plinyminorDB.py) :full_moon: | Poggio Bracciolini | Priapea | [Propertius](../extractors/propertiusDB.py) :full_moon: | Prudentius | [Quintilian](../extractors/quintilianDB.py) :full_moon: | Roman Epitaphs |
+| [Pliny the Elder](../extractors/plinymaiorDB.py) :full_moon: | [Pliny the Younger](../extractors/plinyminorDB.py) :full_moon: | Poggio Bracciolini | Priapea | [Propertius](../extractors/propertiusDB.py) :full_moon: | [Prudentius](../extractors/prudentius.py) :full_moon: | [Quintilian](../extractors/quintilianDB.py) :full_moon: | Roman Epitaphs |
 | [Sallust](../extractors/sallustDB.py) :full_moon: | [Seneca Maior](../extractors/senecaMaiorDB.py) :full_moon: | [Silius](../extractors/siliusDB.py) :full_moon: | [Statius](../extractors/statiusDB.py) :full_moon: | [Suetonius](../extractors/suetoniusDB.py) :full_moon: | [Sulpicia](../extractors/sulpiciaDB.py) :full_moon: | Syrus | [Tacitus](../extractors/tacitusDB.py) :full_moon: | 
 | [Terence](../extractors/terenceDB.py) :full_moon: | Theodosian Code | [Tibullus](../extractors/tibullusDB.py) :full_moon: | [Valerius Flaccus](../extractors/valeriusflaccusDB.py) :full_moon: | Valerius Maximus | [Varro](../extractors/varroDB.py) :full_moon: | Vegetius | [Velleius Paterculus](../extractors/velleiusDB.py) :full_moon: |
 | [Virgil](../extractors/virgilDB.py) :full_moon: | [Vitruvius](../extractors/vitruviusDB.py) :full_moon: |   |   |   |   |   |   |
+Note: Asconius' organization is really strange.
+Prudentius' file name does not follow the current convention, but it probably doesn't affect anything.
 
 #### Christian
 |       |       |       |       |       |       |       |       |
