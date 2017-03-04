@@ -7,7 +7,7 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 |       |       |       |       |       |       |       |       |
 |:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|
 |   |   | [Ammianus Marcellinus](../extractors/ammianusDB.py) :full_moon: | [Apicius](../extractors/apiciusDB.py) | [Apuleius](../extractors/apuleiusDB.py) :full_moon: | Aquinas | [Asconius](../extractors/asconiusDB.py) :waxing_gibbous_moon: | [Augustus](../extractors/augustusDB.py) :full_moon: | 
-| [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | [Ausonius] :first_quarter_moon: | Avianus | [Bacon] :first_quarter_moon: | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
+| [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | [Ausonius](../extractors/ausoniusDB.py) :full_moon: | Avianus | [Bacon] :first_quarter_moon: | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
 | [Claudian](../extractors/claudianDB.py) :full_moon: | Claudius Caesar | Columella | [Curtius Rufus](../extractors/curtiusDB.py) :full_moon: | Disticha Catonis | Donatus | Einhard | [Ennius](../extractors/enniusDB.py) :full_moon: |
 | [Eutropius](../extractors/eutropiusDB.py) :full_moon: | Festus | [Florus](../extractors/florusDB.py) :waxing_gibbous_moon: | [Frontinus](../extractors/frontinusDB.py) :full_moon: | Gellius | Gregory of Tours | Gregory the Great | [Horace](../extractors/horaceDB.py) :full_moon: |
 | Historia Augusta | Hyginus | Isidore | Jordanes | Julius Obsequens | [Justin](../extractors/justinDB.py) :full_moon: | Justinian | [Juvenal](../extractors/juvenalDB.py) :full_moon: |
@@ -23,7 +23,7 @@ Prudentius' file name does not follow the current convention, but it probably do
 #### Christian
 |       |       |       |       |       |       |       |       |
 |:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:| 
-| [Abelard](../extractors/abelardDB.py) :full_moon: | [Alcuin](../extractors/alcuinDB.py) :full_moon: | [Ambrose](..extractors/ambrosiusDB.py) :full_moon: | Anselm | Aquinas | Arnobius | Arnulf of Lisieux | Augustine | 
+| [Abelard](../extractors/abelardDB.py) :full_moon: | [Alcuin](../extractors/alcuinDB.py) :full_moon: | [Ambrose](../extractors/ambrosiusDB.py) :full_moon: | Anselm | Aquinas | Arnobius | Arnulf of Lisieux | Augustine | 
 | Bede | Benedict | Berengar | Bernard of Clairvaux | Bernard of Cluny | Biblia Sacra | Bonaventure | Carmen de Martyrio |
 | [Cassiodorus](../extractors/cassiodorusDB.py) :full_moon: | Christian Creeds | Commodianus | Decretum Gelasianum | Dies Irae | Egeria | Ennodius | Eucherius |
 | Eugippius | Gregorius Magnus | Gregory VII | Gregory IX | [Hugo of St. Victor](../extractors/hugoDB.py) :full_moon: | Hydatius | Hymni et cantica | Iacobus de Voragine |
