@@ -18,13 +18,26 @@ def tokenize():
         c = connection.cursor()
         print("connection to cursor")
         fts.register_tokenizer(c, 'oulatin', fts.make_tokenizer_module(OUWordTokenizer('latin')))
+        fts.register_tokenizer(c, 'porter', fts.make_tokenizer_module(OUWordTokenizer('latin')))
         print("registering tokenizer")
         c.execute("begin;")
-        c.execute("CREATE VIRTUAL TABLE IF NOT EXISTS text_idx  USING fts3 (id, title, book, author, date, chapter, verse, passage, link, documentType, tokenize={});".format("oulatin"))
+        c.execute("CREATE VIRTUAL TABLE IF NOT EXISTS text_idx  USING fts4 (id, title, book, author, date, chapter, verse, passage, link, documentType, tokenize={});".format("oulatin"))
+        c.execute("CREATE VIRTUAL TABLE IF NOT EXISTS text_idx_porter  USING fts4 (id, title, book, author, date, chapter, verse, passage, link, documentType, tokenize={});".format("porter"))
         c.execute("commit;")
         print("virtual table created")
         c.execute("INSERT INTO text_idx (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
+        c.execute("INSERT INTO text_idx_porter (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
         print ("inserted data into virtual table")
+        print ("Enter a phrase to search:")
+        search=input()
+        stmt1="select id, title, book, author, link from text_idx where passage MATCH '"+search+"'"
+        stmt2="select id, title, book, author, link from text_idx where passage MATCH '"+search+"'"
+        r1=c.execute(stmt1)
+        r2=c.execute(stmt2)
+        r3=(set(r1.fetchall()) or set(r2.fetchall()))
+        r4=list(r3)
+        print (r4)
+        
 
 @app.route('/')
 def hello_world():
