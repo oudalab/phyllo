@@ -108,7 +108,7 @@ def main():
 
 # Case 3: Chapters separated by un/bracketed numbers, similarly to sentences.
     def parsecase3(ptags, c, colltitle, title, author, date, URL):
-        chapter = -1
+        chapter = '-1'
         verse = -1
         isnumeral = case3isNumeral(ptags)
         for p in ptags:
