@@ -20,6 +20,7 @@ RUN mkdir /src
 COPY ./search/buildcode.sh /src
 COPY ./search/app.py /src
 COPY ./search/search.py /src
+COPY ./search/query.py /src
 
 RUN cd /src && bash buildcode.sh
 
