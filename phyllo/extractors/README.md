@@ -6,9 +6,9 @@ Completion status of a collection is based on the visiblity of the adjacent moon
 #### Latin
 |       |       |       |       |       |       |       |       |
 |:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|
-|   |   | [Ammianus Marcellinus](../extractors/ammianusDB.py) :full_moon: | [Apicius](../extractors/apiciusDB.py) | [Apuleius](../extractors/apuleiusDB.py) :full_moon: | Aquinas | [Asconius](../extractors/asconiusDB.py) :waxing_gibbous_moon: | [Augustus](../extractors/augustusDB.py) :full_moon: | 
-| [Aurelius Victor](../extractors/aureliusDB.py) :full_moon: | [Ausonius](../extractors/ausoniusDB.py) :full_moon: | Avianus | [Bacon] :first_quarter_moon: | [Caesar](../extractors/caesarDB.py) :full_moon: | [Cato](../extractors/catoElderDB.py) :full_moon: | [Catullus](../extractors/catullusDB.py) :full_moon: | [Cicero](../extractors/ciceroDB.py) :waxing_gibbous_moon: | 
-| [Claudian](../extractors/claudianDB.py) :full_moon: | Claudius Caesar | Columella | [Curtius Rufus](../extractors/curtiusDB.py) :full_moon: | Disticha Catonis | Donatus | Einhard | [Ennius](../extractors/enniusDB.py) :full_moon: |
+|   |   | [Ammianus Marcellinus](http://thelatinlibrary.com/ammianus.html) :full_moon: [Code](../extractors/ammianusDB.py) | [Apicius](http://thelatinlibrary.com/apicius.html) :full_moon: [Code](../extractors/apiciusDB.py) | [Apuleius](http://thelatinlibrary.com/apuleius.html) :full_moon: [Code](../extractors/apuleiusDB.py) | [Aquinas](http://thelatinlibrary.com/aquinas.html) | [Asconius](http://thelatinlibrary.com/asconius.html) :waxing_gibbous_moon: [Code](../extractors/asconiusDB.py) | [Augustus](http://thelatinlibrary.com/aug.html) :full_moon: [Code](../extractors/augustusDB.py) | 
+| [Aurelius Victor](http://thelatinlibrary.com/victor.html) :full_moon: [Code](../extractors/aureliusDB.py) | [Ausonius](http://thelatinlibrary.com/ausonius.html) :full_moon: [Code](../extractors/ausoniusDB.py) | [Avianus](http://thelatinlibrary.com/avianus.html) | [Bacon](http://thelatinlibrary.com/bacon.html) :first_quarter_moon: [Code] | [Caesar](http://thelatinlibrary.com/caes.html) :full_moon: [Code](../extractors/caesarDB.py) | [Cato](http://thelatinlibrary.com/cato.html) :full_moon: [Code](../extractors/catoElderDB.py) | [Catullus](http://thelatinlibrary.com/catullus.shtml) :full_moon: [Code](../extractors/catullusDB.py) | [Cicero](http://thelatinlibrary.com/cic.html) :waxing_gibbous_moon: [Code](../extractors/ciceroDB.py) | 
+| [Claudian](http://thelatinlibrary.com/claudian.html) :full_moon: [Code](../extractors/claudianDB.py) | [Claudius Caesar](http://thelatinlibrary.com/claud.inscr.html) | [Columella](http://thelatinlibrary.com/columella.html) | [Curtius Rufus](http://thelatinlibrary.com/curtius.html) :full_moon: [Code](../extractors/curtiusDB.py) | [Disticha Catonis](http://thelatinlibrary.com/cato.dis.html) | Donatus | Einhard | [Ennius](../extractors/enniusDB.py) :full_moon: |
 | [Eutropius](../extractors/eutropiusDB.py) :full_moon: | Festus | [Florus](../extractors/florusDB.py) :waxing_gibbous_moon: | [Frontinus](../extractors/frontinusDB.py) :full_moon: | Gellius | Gregory of Tours | Gregory the Great | [Horace](../extractors/horaceDB.py) :full_moon: |
 | Historia Augusta | Hyginus | Isidore | Jordanes | Julius Obsequens | [Justin](../extractors/justinDB.py) :full_moon: | Justinian | [Juvenal](../extractors/juvenalDB.py) :full_moon: |
 | Lactantius | [Livy](../extractors/livyDB.py) :full_moon: | [Lucan](../extractors/lucanDB.py) :full_moon: | [Lucretius](../extractors/lucretiusDB.py) :waxing_gibbous_moon: | Manilius | [Martial](../extractors/martialDB.py) :full_moon: | Minucius Felix | Miscellany |
@@ -62,6 +62,11 @@ Prudentius' file name does not follow the current convention, but it probably do
 
 ### Parsing
 Much of prose is separated by sections (chapters) and subsections (verses). Occasionally, the HTML prefixes the subsections with a number. With the recent Sallust, we've been able to construct a regular expression that can separate a block of text into sentences (via punctuation) without ruining the abbreviations.
+```python
+# using negative lookbehind assertion to not match with abbreviations of one or two letters and ellipses.
+# ellipses are not entirely captured, but now it doesn't leave empty cells in the database.
+text = re.split('\[([0-9]+)\]|(?<!\s[A-Z]|[A-Z][a-z])\.\s(?!\.\s)', text)
+```
 Listed below are collections - works where this regular expression is used. This does not include other files (few in number) that split blocks into sentences via full-stop. Works with an asterisk (*) show the potential of where this regular expression could be used, but is in fact not used.
 
 | Collection | Work                     |
