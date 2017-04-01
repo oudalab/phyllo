@@ -14,6 +14,15 @@ from flask import abort
 from flask import request
 from flask import jsonify
 
+from flask import session
+from flask import g
+from flask import redirect
+from flask import url_for
+from flask import render_template
+from flask import flash
+
+from flask_bootstrap import Bootstrap
+
 from whoosh.fields import Schema
 from whoosh.fields import TEXT
 from whoosh.index import open_dir
@@ -33,7 +42,7 @@ logging.basicConfig(stream=sys.stderr,
 
 import pdb
 app = Flask('Phyllo')
-
+Bootstrap(app)
 
 def extract_collection(line, sep='\t'):
     col = {}
@@ -153,24 +162,57 @@ def search(phrase: str):
     ix = open_dir('index')
     with ix.searcher() as searcher:
         #parser = QueryParser("content", ix.schema)
-        parser = MultifieldParser(['author', 'title', 'links', 'content'],
+        parser = MultifieldParser(['author', 'title', 'link', 'content'],
                                   ix.schema)
         myquery = parser.parse(phrase)
         results = searcher.search(myquery, terms=True)
-        for result in results:
-            logging.info('hit: {}'.format(result))
-        return results
+        # for hit in results:
+        #     logging.info('hit: {}'.format(hit))
+        # return results
+        data = []
+        for hit in results:
+            logging.info("The hit: {}".format(hit.highlights('content')))
+            data.append({"rank": hit.rank,
+                         "author": {"data": hit["author"],
+                                    "highlight" : hit.highlights("author")},
+                         "title": {"data": hit["title"], 
+                                   "highlight": hit.highlights("title")},
+                         "link": {"data": hit["link"],
+                                  "highlight":  hit.highlights("link")},
+                         "content": {"data": hit["content"],
+                                  "highlight":  hit.highlights("content")}
+                         })
+        return data
 
 
-
-@app.route('/<string:query>')
+@app.route('/search/<string:query>')
 def q(query):
     logging.info("Query: {}, type: {}".format(query, type(query)))
     results = search(query)
 
-    logging.info("results.matched_terms(): {}".format(results.matched_terms()))
-    return results
+    return jsonify(results)
 
+
+@app.route('/search/<string:query>/highlights', methods=['GET', 'POST'])
+def q_highlights(query):
+    logging.info("Query: {}, type: {}".format(query, type(query)))
+    results = search(query)
+
+    #return jsonify([hit.highlights('content') for hit in results])
+    #return jsonify(results)
+    return render_template('search.html', terms=query, results=results)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def index():
+    logging.info("/search {}|{}".format(request.args, request.method))
+    if request.method == 'GET' and request.args['q'] is not None:
+
+        query = request.args['q']
+        results = search(query)
+        return render_template('search.html', terms=query, results=results)
+    else:
+        return render_template('search.html', terms="", results=[])
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, threaded=True, debug=True)

@@ -1,0 +1,25 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %} The Latin Library Search {% endblock %}
+
+{% block content %}
+
+<form>
+    <input type="search" name="q" value="{{terms}}" />
+    <input type="submit" />
+</form>
+
+<hr/>
+
+<ul>
+{% for hit in results %}
+<li> {{hit["author"]["data"]}} |
+     {{hit["title"]["data"]}} |
+    <a href="{{hit["link"]["data"]}}">
+     {{hit["content"]["highlight"] | safe}}
+    </a>
+</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
