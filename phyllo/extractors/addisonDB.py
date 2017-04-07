@@ -55,7 +55,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
 
         for a in soup.findAll('dd'):
             b.append(a.text)
-            c=0
+        c=0
+        for j, s in enumerate(b):
+            b[j] = s.replace('\xa0', '')
         for j in range(1,20):
             b.insert(9+c, "9999")
             c=10+c+1
@@ -92,6 +94,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         while '' in s1:
             s1.remove('')
         c=0
+        for j, s in enumerate(s1):
+            s1[j] = s.replace('\xa0', '')
         for j in range(1,8):
             s1.insert(10+c, "9999")
             c=10+c+1
@@ -115,7 +119,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
 
         for a in soup.findAll('dd'):
             b.append(a.text)
-            c = 0
+        c = 0
+        for j, s in enumerate(b):
+            b[j] = s.replace('\xa0', '')
         for j in range(1, 17):
             b.insert(9 + c, "9999")
             c = 10 + c + 1
@@ -139,7 +145,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
 
         for a in soup.findAll('dd'):
             b.append(a.text)
-            c = 0
+        c = 0
+        for j, s in enumerate(b):
+            b[j] = s.replace('\xa0', '')
         for j in range(1, 13):
             b.insert(9 + c, "9999")
             c = 10 + c + 1
@@ -163,7 +171,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
 
         for a in soup.findAll('dd'):
             b.append(a.text)
-            c = 0
+        c = 0
+        for j, s in enumerate(b):
+            b[j] = s.replace('\xa0', '')
         for j in range(1, 8):
             b.insert(9 + c, "9999")
             c = 10 + c + 1
@@ -195,7 +205,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             except:
                 pass
             b.append(a.text)
-            c = 0
+        c = 0
+        for j, s in enumerate(b):
+            b[j] = s.replace('\xa0', '')
         for j in range(1, 6):
             b.insert(9 + c, "9999")
             c = 10 + c + 1
@@ -219,7 +231,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
 
         for a in soup.findAll('dd'):
             b.append(a.text)
-            c = 0
+        c = 0
+        for j, s in enumerate(b):
+            b[j] = s.replace('\xa0', '')
         for j in range(1, 8):
             b.insert(9 + c, "9999")
             c = 10 + c + 1
@@ -243,7 +257,10 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
 
         for a in soup.findAll('dd'):
             b.append(a.text)
-            c = 0
+        c = 0
+
+        for j, s in enumerate(b):
+            b[j] = s.replace('\xa0', '')
         for j in range(1, 10):
             b.insert(9 + c, "9999")
             c = 10 + c + 1
@@ -282,6 +299,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         while '' in s1:
             s1.remove('')
         c=0
+
+        for j, s in enumerate(s1):
+            s1[j] = s.replace('\xa0', '')
         for j in range(1,7):
             s1.insert(10+c, "9999")
             c=10+c+1
