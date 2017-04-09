@@ -18,13 +18,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     h=''
     s1=[]
     s2=[]
-    i=1
-    [e.extract() for e in soup.find_all('font')]
-    [e.extract() for e in soup.find_all('sup')]
-    [e.extract() for e in soup.find_all('a')]
     [e.extract() for e in soup.find_all('br')]
     [e.extract() for e in soup.find_all('table')]
-    getp=soup.find_all('p')
+    getp = soup.find_all('p')
     for p in getp:
         # make sure it's not a paragraph without the main text
         try:
@@ -33,32 +29,23 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                 continue
         except:
             pass
-
-        if p.b:
-            chapter=p.b.text
-        else:
-            i=i+1
-            sen=str(p.text).strip()
-            j=1
-            if i>190:
-                rsen = ''
-                s=sen.split('\n')
-                for b in s:
-                    rsen=rsen+' '+b.strip()
-                sen=rsen
-            for s in sent_tokenize(sen):
-                sentn = str(s).strip()
-                num = j
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                            (None, collectiontitle, title, 'Latin', author, date, chapter,
-                             num, sentn, url, 'prose'))
-                j += 1
-
+        sen=sen+p.text
+    s1=sen.split('\n')
+    while '' in s1:
+        s1.remove('')
+    for j,s in enumerate(s1):
+        s1[j] = ''.join(i for i in s if not i.isdigit())
+    for j,b in enumerate(s1):
+        sentn=str(b[2:])
+        num=j
+        cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                    (None, collectiontitle, title, 'Latin', author, date, chapter,
+                     num, sentn, url, 'prose'))
 
 def main():
     # get proper URLs
     siteURL = 'http://www.thelatinlibrary.com'
-    biggsURL = 'http://www.thelatinlibrary.com/bebel.html'
+    biggsURL = 'http://www.thelatinlibrary.com/ferraria.html'
     biggsOPEN = urllib.request.urlopen(biggsURL)
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
@@ -70,17 +57,17 @@ def main():
         textsURL.remove("http://www.thelatinlibrary.com/neo.html")
     logger.info("\n".join(textsURL))
 
-    title='FACETIARUM BEBELIANARUM'
+    title='Vandoperani Ferraria'
 
-    author = 'Heinrich Bebel'
+    author = 'Nicolai Borbonii'
     author = author.strip()
-    collectiontitle = 'LIBER FACETIARUM BEBELIANARUM'
+    collectiontitle ='N. BORBONII VANDOPERANI FERRARIA. Quam scripsit annum agens XIIII '
     collectiontitle=collectiontitle.strip()
-    date = '1472-1518'
+    date = '1503-1550'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Heinrich Bebel'")
+        c.execute("DELETE FROM texts WHERE author = 'Nicolai Borbonii'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 
