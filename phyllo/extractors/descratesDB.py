@@ -87,7 +87,7 @@ def main():
 
     title = []
     for link in biggsSOUP.findAll('a'):
-        if (link.get('href') and link.get('href') != 'index.html' and link.get('href') != 'classics.html' and link.get(
+        if (link.get('href') and link.get('href') != 'index.html' and link.get('href') != 'neo.html' and link.get(
                 'href') != 'christian.html'):
             title.append(link.string)
 
