@@ -36,7 +36,7 @@ def parseRes2(soup, title, url, c, author, date, collectiontitle):
                 num=1
                 c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                           (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
+                           num, sentn.strip(), url, 'prose'))
                 i=0
 
             else:
@@ -48,9 +48,12 @@ def parseRes2(soup, title, url, c, author, date, collectiontitle):
                 num=0
                 for sentn in sent_tokenize(ptext):
                     num=num+1
+                    if sentn.strip() == 'men.': # textual fix
+                        sentn = "Amen."
+                        chapter = '-'
                     c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                           (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
+                           num, sentn.strip(), url, 'prose'))
     else:
         getp = soup.find_all('p')[:-1]
         geturl=soup.find_all('a', href=True)
