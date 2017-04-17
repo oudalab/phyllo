@@ -11,58 +11,51 @@ nltk.download('punkt')
 
 from nltk import sent_tokenize
 
+h=''
+global j
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     chapter = '-'
     [e.extract() for e in soup.find_all('br')]
-    j = 1
-    inv = ['i', 'u']
-    get = strip_tags(soup, inv)
-    getp = get.find_all('p')[:-1]
+    [e.extract() for e in soup.find_all('span')]
+    getp = soup.find_all('p')[:-1]
+    j=1
     for p in getp:
         # make sure it's not a paragraph without the main text
         try:
-            if p['class'][0].lower() in ['border', 'shortborder', 'smallboarder', 'margin',
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
                                          'internal_navigation']:  # these are not part of the main t
                 continue
         except:
             pass
-        if p.has_attr('class'):
-            collectiontitle=p.text
-        else:
-            sen=p.text
-            s1=sent_tokenize(sen)
-            i=0
-            j=1
-            k=1
-            for s in s1:
-                if s != s1[i]:
-                    chapter=str(k)
-                    sentn=s
-                    num=j
-                    cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                 num, sentn, url, 'prose'))
-                    j+=1
-            k+=1
+        sen = p.text
+        s1 = sen.split('\n')
+        chapter=j
+        s2 = []
+        for s in s1:
+            if j + 1 <= len(s1) - 1:
+                s = s1[j].strip() + ' ' + s1[j + 1].strip()
+                j += 2
+                s2.append(s)
+        i=1
+        for s in s2:
+            num = i
+            sentn = s
+            print(collectiontitle)
+            print(title)
+            print(author)
+            print(date)
+            print(chapter)
+            print(num)
+            print(sentn)
+            print(url)
+            i+=1
+        j+=1
 
-def strip_tags(soup, invalid_tags):
-    for tag in soup.findAll(True):
-        if tag.name in invalid_tags:
-            s = ""
-
-            for c in tag.contents:
-                if not isinstance(c, NavigableString):
-                    c = strip_tags(str(c), invalid_tags)
-                s += str(c)
-
-            tag.replaceWith(s)
-
-    return soup
 
 def main():
     # get proper URLs
     siteURL = 'http://www.thelatinlibrary.com'
-    biggsURL = 'http://www.thelatinlibrary.com/des.html'
+    biggsURL = 'http://www.thelatinlibrary.com/corvinus.html'
     biggsOPEN = urllib.request.urlopen(biggsURL)
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
@@ -80,7 +73,7 @@ def main():
 
     author = biggsSOUP.title.string
     author = author.strip()
-    collectiontitle = biggsSOUP.div.contents[0].strip()
+    collectiontitle = biggsSOUP.p.contents[0].strip()
     date = biggsSOUP.span.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
     date=date.strip()
 
@@ -94,7 +87,7 @@ def main():
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Descartes'")
+        c.execute("DELETE FROM texts WHERE author = 'Laurentius Corvinus'")
         for u in textsURL:
             uOpen = urllib.request.urlopen(u)
             gestSoup = BeautifulSoup(uOpen, 'html5lib')

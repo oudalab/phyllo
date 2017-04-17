@@ -14,36 +14,39 @@ from nltk import sent_tokenize
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     chapter = '-'
     [e.extract() for e in soup.find_all('br')]
-    j = 1
     inv = ['i', 'u']
     get = strip_tags(soup, inv)
     getp = get.find_all('p')[:-1]
     for p in getp:
         # make sure it's not a paragraph without the main text
+        i = 1
         try:
-            if p['class'][0].lower() in ['border', 'shortborder', 'smallboarder', 'margin',
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
                                          'internal_navigation']:  # these are not part of the main t
                 continue
         except:
             pass
-        if p.has_attr('class'):
-            collectiontitle=p.text
+        sen=p.text
+        sen=sen.strip()
+        if sen.startswith('Epigrammata'):
+            chapter=sen
         else:
-            sen=p.text
-            s1=sent_tokenize(sen)
-            i=0
-            j=1
-            k=1
+            s1=sen.split('\n')
+            s2=[]
+            j=0
             for s in s1:
-                if s != s1[i]:
-                    chapter=str(k)
-                    sentn=s
-                    num=j
-                    cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                 num, sentn, url, 'prose'))
-                    j+=1
-            k+=1
+                if j + 1 <= len(s1) - 1:
+                    s = s1[j].strip() + ' ' + s1[j + 1].strip()
+                    j += 2
+                    s2.append(s)
+            i=1
+            for s in s2:
+                sentn=s
+                num=i
+                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                            (None, collectiontitle, title, 'Latin', author, date, chapter,
+                             num, sentn, url, 'prose'))
+                i+=1
 
 def strip_tags(soup, invalid_tags):
     for tag in soup.findAll(True):
@@ -62,14 +65,10 @@ def strip_tags(soup, invalid_tags):
 def main():
     # get proper URLs
     siteURL = 'http://www.thelatinlibrary.com'
-    biggsURL = 'http://www.thelatinlibrary.com/des.html'
+    biggsURL = 'http://www.thelatinlibrary.com/marullo.html'
     biggsOPEN = urllib.request.urlopen(biggsURL)
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
-
-    for a in biggsSOUP.find_all('a', href=True):
-        link = a['href']
-        textsURL.append("{}/{}".format(siteURL, link))
 
     # remove some unnecessary urls
     while ("http://www.thelatinlibrary.com/index.html" in textsURL):
@@ -78,28 +77,17 @@ def main():
         textsURL.remove("http://www.thelatinlibrary.com/neo.html")
     logger.info("\n".join(textsURL))
 
-    author = biggsSOUP.title.string
+    title='EPIGRAMMATA SELECTA'
+
+    author = 'Michele Marullo'
     author = author.strip()
-    collectiontitle = biggsSOUP.div.contents[0].strip()
-    date = biggsSOUP.span.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
-    date=date.strip()
-
-    title = []
-    for link in biggsSOUP.findAll('a'):
-        if (link.get('href') and link.get('href') != 'index.html' and link.get('href') != 'neo.html' and link.get(
-                'href') != 'classics.html'):
-            title.append(link.string)
-
-    i = 0
+    collectiontitle='MICHELE MARULLO'
+    date = '1450-1500'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Descartes'")
-        for u in textsURL:
-            uOpen = urllib.request.urlopen(u)
-            gestSoup = BeautifulSoup(uOpen, 'html5lib')
-            parseRes2(gestSoup, title[i], u, c, author, date, collectiontitle)
-            i = i + 1
+        c.execute("DELETE FROM texts WHERE author = 'Michele Marullo'")
+        parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 
 if __name__ == '__main__':
