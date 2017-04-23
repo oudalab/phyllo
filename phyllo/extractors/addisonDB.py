@@ -17,6 +17,90 @@ cha_array=[]
 suburl = []
 verse = []
 
+def parsePoem(soup, title, url, cur, author, date, collectiontitle):
+    chapter = -1
+    verse = 0
+    openurl = urllib.request.urlopen(url)
+    textsoup = BeautifulSoup(openurl, 'html5lib')
+
+    try:
+        title = textsoup.title.string.split(':')[1].strip()
+    except:
+        title = textsoup.title.string.strip()
+    getp = textsoup.find_all('p')
+
+    for p in getp:
+        # make sure it's not a paragraph without the main text
+        try:
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                         'internal_navigation']:  # these are not part of the main t
+                continue
+        except:
+            pass
+        # find chapter
+        chapter_f = p.find('b')
+        if chapter_f is not None:
+            chapter = p.get_text().strip()
+            verse = 0
+            continue
+        else:
+            brtags = p.findAll('br')
+            verses = []
+            try:
+                try:
+                    firstline = brtags[0].previous_sibling.strip()
+                except:
+                    firstline = brtags[0].previous_sibling.previous_sibling.strip()
+                verses.append(firstline)
+            except:
+                pass
+            for br in brtags:
+                try:
+                    text = br.next_sibling.next_sibling.strip()
+                except:
+                    text = br.next_sibling.strip()
+                if text is None or text == '' or text.isspace():
+                    continue
+                verses.append(text)
+        for v in verses:
+            # verse number assignment.
+            verse += 1
+            cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                        (None, collectiontitle, title, 'Latin', author, date, chapter,
+                         verse, v, url, 'prose'))
+
+def altParsePoem(soup, title, url, cur, author, date, collectiontitle, jrange):
+    chapter = -1
+    j = 1
+    sen = ""
+    b = []
+    i = 1
+
+    for a in soup.findAll('dd'):
+        b.append(a.text)
+    c = 0
+    for j, s in enumerate(b):
+        b[j] = s.replace('\xa0', '')
+    for j in range(1, jrange):
+        b.insert(9 + c, "9999")
+        c = 10 + c + 1
+
+    for s in b:
+        if s == "9999":
+            sentn = sen
+            sentext = re.split('\n', sentn)
+            sentext = filter(lambda x: len(x) > 3, sentext)
+            for line in sentext:
+                num = i
+                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                            (None, collectiontitle, title, 'Latin', author, date, chapter,
+                             num, line, url, 'prose'))
+                i = i + 1
+            sen = ""
+        else:
+            sen = sen + s
+
+
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     chapter = '-'
     sen=""
@@ -48,276 +132,23 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                        num, sentn, url, 'prose'))
             i=i+1
     if url == 'http://www.thelatinlibrary.com/addison/pax.shtml':
-        j=1
-        sen=""
-        b=[]
-        i=1
-
-        for a in soup.findAll('dd'):
-            b.append(a.text)
-        c=0
-        for j, s in enumerate(b):
-            b[j] = s.replace('\xa0', '')
-        for j in range(1,20):
-            b.insert(9+c, "9999")
-            c=10+c+1
-
-        for s in b:
-            if s == "9999":
-                num = i
-                sentn=sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen=""
-                i = i + 1
-            else:
-                sen=sen+s
+        altParsePoem(soup, title, url, cur, author, date, collectiontitle, 20)
     if url=='http://www.thelatinlibrary.com/addison/barometri.shtml':
-        j=1
-        s=''
-        sen=''
-        i=1
-        [e.extract() for e in soup.find_all('br')]
-        [e.extract() for e in soup.find_all('font')]
-        for p in soup.findAll('p'):
-            # make sure it's not a paragraph without the main text
-            try:
-                if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
-                                             'internal_navigation']:  # these are not part of the main t
-                    continue
-            except:
-                pass
-            s=s+p.get_text()
-
-        s1=s.split('\n')
-        while '' in s1:
-            s1.remove('')
-        c=0
-        for j, s in enumerate(s1):
-            s1[j] = s.replace('\xa0', '')
-        for j in range(1,8):
-            s1.insert(10+c, "9999")
-            c=10+c+1
-
-        for s in s1:
-            if s == "9999":
-                num = i
-                sentn=sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen=""
-                i = i + 1
-            else:
-                sen=sen+s+'\n'
+        parsePoem(soup, title, url, cur, author, date, collectiontitle)
     if url == 'http://www.thelatinlibrary.com/addison/praelium.shtml':
-        j = 1
-        sen = ""
-        b = []
-        i=1
-
-        for a in soup.findAll('dd'):
-            b.append(a.text)
-        c = 0
-        for j, s in enumerate(b):
-            b[j] = s.replace('\xa0', '')
-        for j in range(1, 17):
-            b.insert(9 + c, "9999")
-            c = 10 + c + 1
-
-        for s in b:
-            if s == "9999":
-                num = i
-                sentn = sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen = ""
-                i = i + 1
-            else:
-                sen = sen + s
+        altParsePoem(soup, title, url, cur, author, date, collectiontitle, 17)
     if url == 'http://www.thelatinlibrary.com/addison/resurr.shtml':
-        j = 1
-        sen = ""
-        b = []
-        i=1
-
-        for a in soup.findAll('dd'):
-            b.append(a.text)
-        c = 0
-        for j, s in enumerate(b):
-            b[j] = s.replace('\xa0', '')
-        for j in range(1, 13):
-            b.insert(9 + c, "9999")
-            c = 10 + c + 1
-
-        for s in b:
-            if s == "9999":
-                num = i
-                sentn = sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen = ""
-                i = i + 1
-            else:
-                sen = sen + s
+        altParsePoem(soup, title, url, cur, author, date, collectiontitle, 13)
     if url == 'http://www.thelatinlibrary.com/addison/sphaer.shtml':
-        j = 1
-        sen = ""
-        b = []
-        i=1
-
-        for a in soup.findAll('dd'):
-            b.append(a.text)
-        c = 0
-        for j, s in enumerate(b):
-            b[j] = s.replace('\xa0', '')
-        for j in range(1, 8):
-            b.insert(9 + c, "9999")
-            c = 10 + c + 1
-
-        for s in b:
-            if s == "9999":
-                num = i
-                sentn = sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen = ""
-                i = i + 1
-            else:
-                sen = sen + s
+        altParsePoem(soup, title, url, cur, author, date, collectiontitle, 8)
     if url == 'http://www.thelatinlibrary.com/addison/hannes.shtml':
-        j = 1
-        sen = ""
-        b = []
-        i=1
-        title='D. D. HANNES, INSIGNISSIMUM MEDICUM ET POETAM'
-
-        for a in soup.findAll('dd'):
-            # make sure it's not a paragraph without the main text
-            try:
-                if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
-                                             'internal_navigation']:  # these are not part of the main t
-                    continue
-            except:
-                pass
-            b.append(a.text)
-        c = 0
-        for j, s in enumerate(b):
-            b[j] = s.replace('\xa0', '')
-        for j in range(1, 6):
-            b.insert(9 + c, "9999")
-            c = 10 + c + 1
-
-        for s in b:
-            if s == "9999":
-                num = i
-                sentn = sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen = ""
-                i = i + 1
-            else:
-                sen = sen + s
+        altParsePoem(soup, title, url, cur, author, date, collectiontitle, 6)
     if url == 'http://www.thelatinlibrary.com/addison/sphaer.shtml':
-        j = 1
-        sen = ""
-        b = []
-        i=1
-
-        for a in soup.findAll('dd'):
-            b.append(a.text)
-        c = 0
-        for j, s in enumerate(b):
-            b[j] = s.replace('\xa0', '')
-        for j in range(1, 8):
-            b.insert(9 + c, "9999")
-            c = 10 + c + 1
-
-        for s in b:
-            if s == "9999":
-                num = i
-                sentn = sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen = ""
-                i = i + 1
-            else:
-                sen = sen + s
+        altParsePoem(soup, title, url, cur, author, date, collectiontitle, 8)
     if url == 'http://www.thelatinlibrary.com/addison/machinae.shtml':
-        j = 1
-        sen = ""
-        b = []
-        i=1
-
-        for a in soup.findAll('dd'):
-            b.append(a.text)
-        c = 0
-
-        for j, s in enumerate(b):
-            b[j] = s.replace('\xa0', '')
-        for j in range(1, 10):
-            b.insert(9 + c, "9999")
-            c = 10 + c + 1
-
-        for s in b:
-            if s == "9999":
-                num = i
-                sentn = sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen = ""
-                i = i + 1
-            else:
-                sen = sen + s
-
+        altParsePoem(soup, title, url, cur, author, date, collectiontitle, 10)
     if url=='http://www.thelatinlibrary.com/addison/burnett.shtml':
-        j=1
-        s=''
-        sen=''
-        i=1
-        title='AD INSIGNISSIMUM VIRUM D. THO. BURNETTUM, SACRAE THEORIAE TELLURIS AUTOREM'
-        [e.extract() for e in soup.find_all('br')]
-        [e.extract() for e in soup.find_all('font')]
-        for p in soup.findAll('p'):
-            # make sure it's not a paragraph without the main text
-            try:
-                if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
-                                             'internal_navigation']:  # these are not part of the main t
-                    continue
-            except:
-                pass
-            s=s+p.get_text()
-
-        s1=s.split('\n')
-        while '' in s1:
-            s1.remove('')
-        c=0
-
-        for j, s in enumerate(s1):
-            s1[j] = s.replace('\xa0', '')
-        for j in range(1,7):
-            s1.insert(10+c, "9999")
-            c=10+c+1
-
-        for s in s1:
-            if s == "9999":
-                num = i
-                sentn=sen
-                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                          (None, collectiontitle, title, 'Latin', author, date, chapter,
-                           num, sentn, url, 'prose'))
-                sen=""
-                i = i + 1
-            else:
-                sen=sen+s+'\n'
-
+        parsePoem(soup, title, url, cur, author, date, collectiontitle)
 
 
 def main():
