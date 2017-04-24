@@ -27,6 +27,11 @@ def parsePoem(soup, title, url, cur, author, date, collectiontitle):
         title = textsoup.title.string.split(':')[1].strip()
     except:
         title = textsoup.title.string.strip()
+
+    if title.startswith("Preface"):
+        type = "prose"
+    else:
+        type = "poetry"
     getp = textsoup.find_all('p')
 
     for p in getp:
@@ -67,7 +72,7 @@ def parsePoem(soup, title, url, cur, author, date, collectiontitle):
             verse += 1
             cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                         (None, collectiontitle, title, 'Latin', author, date, chapter,
-                         verse, v, url, 'prose'))
+                         verse, v, url, type))
 
 def altParsePoem(soup, title, url, cur, author, date, collectiontitle, jrange):
     chapter = -1

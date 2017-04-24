@@ -19,7 +19,7 @@ verse = []
 
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     j = 1
-    chapter='1'
+    chapter="-1"
     s = ''
     sen = ''
     i = 1
@@ -52,13 +52,16 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             c = 7 + c + 1
     for s in s1:
         if s == "9999":
-            num = i
             sentn = sen
-            cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                        (None, collectiontitle, title, 'Latin', author, date, chapter,
-                         num, sentn, url, 'prose'))
+            sentn = re.split('\n', sentn)
+            sentn = filter(lambda x: len(x) > 3, sentn)
+            for v in sentn:
+                num = i
+                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                            (None, collectiontitle, title, 'Latin', author, date, chapter,
+                             num, v, url, 'poetry'))
+                i = i+1
             sen = ""
-            i = i + 1
         else:
             sen = sen + s + '\n'
 
