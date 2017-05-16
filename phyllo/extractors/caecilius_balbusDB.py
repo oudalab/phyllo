@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-#from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # Case 1: Sections split by numbers (Roman or not) followed by a period, or bracketed. Subsections split by <p> tags
 def parsecase1(ptags, c, colltitle, title, author, date, URL):
@@ -19,7 +19,6 @@ def parsecase1(ptags, c, colltitle, title, author, date, URL):
                 continue
         except:
             pass
-        passage = ''
         text = p.get_text().strip()
         # Skip empty paragraphs. and skip the last part with the collection link.
         if len(text) <= 0 or text.startswith('The Misc\n'):
@@ -90,7 +89,7 @@ def main():
 
             parsecase1(getp, c, colltitle, title, author, date, url)
 
-    #logger.info("Program runs successfully.")
+    logger.info("Program runs successfully.")
 
 
 if __name__ == '__main__':
