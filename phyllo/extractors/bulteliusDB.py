@@ -14,6 +14,7 @@ from nltk import sent_tokenize
 
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     sen=""
+    num = 1
     s=[]
     [e.extract() for e in soup.find_all('br')]
     getp=soup.find_all('p')
@@ -31,7 +32,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     while '' in s:
         s.remove('')
     for j,b in enumerate(s):
-        chapter=str(j+1)
+        chapter='-'
         num=j+1
         sentn=b.strip()
         cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
@@ -57,16 +58,15 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             if not p.table:
                 if p.b:
                     ch=p.b.text
+                    num = 1 # reset verse number
                 else:
                     chapter='-'
-                    j=1
                     sen=str(p.text)
                     s=sen[6:]
                     h=''.join(i for i in s if not i.isdigit())
                     g=h.split('()')
                     for v in g:
                         sentn=v.strip()
-                        num=j
                         if ch:
                             chapter=ch
                         else:
@@ -74,18 +74,18 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                         cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                     (None, collectiontitle, title, 'Latin', author, date, chapter,
                                      num, sentn, url, 'prose'))
-                        j=j+1
+                        num=num+1
 
 
 def main():
     # get proper URLs
     siteURL = 'http://www.thelatinlibrary.com'
-    anselmURL = 'http://www.thelatinlibrary.com/bultelius.html'
-    anselmOPEN = urllib.request.urlopen(anselmURL)
-    anselmSOUP = BeautifulSoup(anselmOPEN, 'html5lib')
+    bulteURL = 'http://www.thelatinlibrary.com/bultelius.html'
+    bulteOPEN = urllib.request.urlopen(bulteURL)
+    bulteSOUP = BeautifulSoup(bulteOPEN, 'html5lib')
     textsURL = []
 
-    for a in anselmSOUP.find_all('a', href=True):
+    for a in bulteSOUP.find_all('a', href=True):
         link = a['href']
         textsURL.append("{}/{}".format(siteURL, link))
     # remove some unnecessary urls
@@ -95,20 +95,17 @@ def main():
         textsURL.remove("http://www.thelatinlibrary.com/neo.html")
     logger.info("\n".join(textsURL))
 
-    author = anselmSOUP.title.string
+    author = bulteSOUP.title.string
     author = author.strip()
-    collectiontitle = anselmSOUP.p.contents[0].strip()
-    date = anselmSOUP.span.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
+    collectiontitle = bulteSOUP.p.contents[0].strip()
+    date = bulteSOUP.span.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
 
     title = []
-    for link in anselmSOUP.findAll('a'):
+    for link in bulteSOUP.findAll('a'):
         if (link.get('href') and link.get('href') != 'index.html' and link.get('href') != 'classics.html' and link.get('href') != 'christian.html'):
             title.append(link.string)
 
     i=0
-    print(author)
-    print(collectiontitle)
-    print(date)
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()

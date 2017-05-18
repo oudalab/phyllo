@@ -46,6 +46,11 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             if v != '.':
                 sentn = v
                 num = i
+                if sentn.startswith('Quae ut prim'): # correction for chap 4.
+                    chapter = 4
+                    num = 1
+                    i = 1 # reset counter
+                    j+=1 # increase chapter counter
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,
                              num, sentn, url, 'prose'))
@@ -85,9 +90,8 @@ def main():
     title='EXPEDITIO FRANCISCI DRAKI EQUITIS ANGLI'
 
     author = biggsSOUP.p.contents[0].strip()
-    author = author.strip()
-    collectiontitle = biggsSOUP.title.string
-    collectiontitle=collectiontitle.strip()
+    author = author.strip().title()
+    collectiontitle = author
     date = 1588
 
     with sqlite3.connect('texts.db') as db:
