@@ -51,6 +51,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             if not i==32:
                 num=i
                 sentn = str(p.text).strip()
+                if sentn.startswith("Notes:"):
+                    i +=1
+                    continue
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,
                              num, sentn, url, 'prose'))

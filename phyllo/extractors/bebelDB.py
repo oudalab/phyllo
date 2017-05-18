@@ -47,6 +47,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                     rsen=rsen+' '+b.strip()
                 sen=rsen
             for s in sent_tokenize(sen):
+                if s.isspace():
+                    continue
                 sentn = str(s).strip()
                 num = j
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
