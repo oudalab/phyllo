@@ -1,86 +1,79 @@
+# This now tests Cotta.
+
 import sqlite3
 import urllib
 import re
 from urllib.request import urlopen
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 from phyllo.phyllo_logger import logger
-import nltk
-from itertools import cycle
-
-nltk.download('punkt')
-
-from nltk import sent_tokenize
-
-global r
-
-r = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV"]
-s2=[]
-def parseRes2(soup, title, url, cur, author, date, collectiontitle):
-    chapter = '-'
-    [e.extract() for e in soup.find_all('br')]
-    getp = soup.find_all('p')[:-1]
-    j=1
-    for p in getp:
-        # make sure it's not a paragraph without the main text
-        try:
-            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
-                                         'internal_navigation']:  # these are not part of the main t
-                continue
-        except:
-            pass
-        sen=p.text
-        if sen.isupper():
-            chapter=sen
-        else:
-            s1=sen.split('\n')
-            j=1
-
-            for s in s1:
-                if j+1<=len(s1)-1:
-                    s= s1[j].strip() + ' ' + s1[j+1].strip()
-                    j+=2
-                    s2.append(s)
-            i=1
-            for h in s2:
-                if h != ' ':
-                    sentn = h
-                    num = i
-                    cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                 num, sentn, url, 'prose'))
-                    i += 1
-
-
-
 
 
 def main():
-    # get proper URLs
-    siteURL = 'http://www.thelatinlibrary.com'
-    biggsURL = 'http://www.thelatinlibrary.com/cotta.html'
-    biggsOPEN = urllib.request.urlopen(biggsURL)
-    biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
-    textsURL = []
-
-    # remove some unnecessary urls
-    while ("http://www.thelatinlibrary.com/index.html" in textsURL):
-        textsURL.remove("http://www.thelatinlibrary.com/index.html")
-        textsURL.remove("http://www.thelatinlibrary.com/classics.html")
-        textsURL.remove("http://www.thelatinlibrary.com/neo.html")
-    logger.info("\n".join(textsURL))
-
-    title='CARMINA'
-
-    author = 'Giovanni Cotta'
-    author = author.strip()
-    collectiontitle = biggsSOUP.title.string
-    collectiontitle=collectiontitle.strip()
-    date = '1480-1510'
+    # The collection URL below.
+    collURL = 'http://www.thelatinlibrary.com/cotta.html'
+    collOpen = urllib.request.urlopen(collURL)
+    collSOUP = BeautifulSoup(collOpen, 'html5lib')
+    author = "Giovanni Cotta"
+    colltitle = "GIOVANNI COTTA"
+    date = "1480-1510"
+    # we could delete a bunch of code, but this would be the smallest change with the same result
+    textsURL = [collURL]
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
         c.execute("DELETE FROM texts WHERE author = 'Giovanni Cotta'")
-        parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
+
+        for url in textsURL:
+            chapter = -1
+            verse = 0
+            openurl = urllib.request.urlopen(url)
+            textsoup = BeautifulSoup(openurl, 'html5lib')
+            try:
+                title = textsoup.title.string.split(';')[1].strip()
+            except:
+                title = textsoup.title.string.strip()
+            getp = textsoup.find_all('p')
+
+            for p in getp:
+                # make sure it's not a paragraph without the main text
+                try:
+                    if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                                 'internal_navigation']:  # these are not part of the main t
+                        continue
+                except:
+                    pass
+                # find chapter
+                chapter_f = p.get_text().strip()
+                if chapter_f.isupper():
+                    chapter = chapter_f
+                    verse = 0
+                    continue
+                else:
+                    brtags = p.findAll('br')
+                    verses = []
+                    try:
+                        try:
+                            firstline = brtags[0].previous_sibling.strip()
+                        except:
+                            firstline = brtags[0].previous_sibling.previous_sibling.strip()
+                        verses.append(firstline)
+                    except:
+                        pass
+                    for br in brtags:
+                        try:
+                            text = br.next_sibling.next_sibling.strip()
+                        except:
+                            text = br.next_sibling.strip()
+                        if text is None or text == '' or text.isspace():
+                            continue
+                        verses.append(text)
+                for v in verses:
+                    # verse number assignment.
+                    verse += 1
+                    c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                              (None, colltitle, title, 'Latin', author, date, chapter,
+                               verse, v, url, 'poetry'))
+
 
 
 if __name__ == '__main__':

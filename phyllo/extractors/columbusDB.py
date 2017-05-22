@@ -59,7 +59,7 @@ def main():
 
     author = biggsSOUP.title.string
     author = author.strip()
-    collectiontitle = 'EPISTOLA DE INSULIS NUPER REPERTIS'
+    collectiontitle = 'CHRISTOPHORUS COLUMBUS'
     date = '1451-1506'
 
     with sqlite3.connect('texts.db') as db:
