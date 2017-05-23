@@ -26,12 +26,15 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             pass
         sen=p.text
         for s in sent_tokenize(sen):
-            num=j
-            sentn=s
-            cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                    (None, collectiontitle, title, 'Latin', author, date, chapter,
-                     num, sentn, url, 'prose'))
-            j+=1
+            sentn=re.split('\n',s)
+            for verse in sentn:
+                if verse.isspace() or verse == '':
+                    continue
+                num = j
+                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                        (None, collectiontitle, title, 'Latin', author, date, chapter,
+                         num, verse.strip(), url, 'poetry'))
+                j+=1
 
 
 def main():
@@ -49,16 +52,15 @@ def main():
         textsURL.remove("http://www.thelatinlibrary.com/neo.html")
     logger.info("\n".join(textsURL))
 
-    title='GAVDEAMVS IGITVR'
+    title='IN VIRI PRAESTANTISSIMI ISAACI NEWTONI OPUS HOCCE MATHEMATICO-PHYSICUM SAECULI GENTISQUE NOSTRAE DECUS EGREGIUM.'
 
-    author = 'IN VIRI PRAESTANTISSIMI ISAACI NEWTONI OPUS HOCCE MATHEMATICO-PHYSICUM SAECULI GENTISQUE NOSTRAE DECUS EGREGIUM.'
-    author = author.strip()
+    author = 'Edmond Halley'
     collectiontitle='EDMOND HALLEY'
     date = '-'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Garcilaso de la Vega'")
+        c.execute("DELETE FROM texts WHERE author = 'Edmond Halley'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 
