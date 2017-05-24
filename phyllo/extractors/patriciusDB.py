@@ -33,6 +33,9 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         j=1
         for s in sent_tokenize(sen):
             sentn=s.strip()
+            if sentn == '':
+                # I wish people used HTML properly.
+                continue
             chapter=k
             num=j
             cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",

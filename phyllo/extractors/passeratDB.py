@@ -36,14 +36,16 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         s1=sen.split('\n')
         for s in s1:
             if s!='':
-                sentn = s.strip()
+                sentn = re.sub(r'[0-9]+$','',s)
+                sentn = sentn.strip()
+                if sentn == 'de nihilo':
+                    chapter = sentn
+                    continue
                 num = j
-                chapter = k
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,
                              num, sentn, url, 'prose'))
                 j += 1
-        k+=1
 
 def main():
     # get proper URLs
@@ -56,13 +58,12 @@ def main():
     title='POEMA CI N. JOANNIS PASSERATI REGII IN ACADEMIA PARISIENSI PROFESSORIS AD ORNATISSIMVM VIRVM ERRICVM MEMMIVM '
 
     author = 'Jean Passerat'
-    author = author.strip()
     collectiontitle='JEAN PASSERAT'
     date = '1534-1602'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'John Owen'")
+        c.execute("DELETE FROM texts WHERE author = 'Jean Passerat'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 
