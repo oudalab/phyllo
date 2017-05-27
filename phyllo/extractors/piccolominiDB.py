@@ -15,7 +15,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     chapter = '-'
     siteURL = 'http://www.thelatinlibrary.com'
     [e.extract() for e in soup.find_all('br')]
-    j = 1
+    j = 0
     inv = ['i', 'u']
     get = strip_tags(soup, inv)
     getp = get.find_all('p')
@@ -23,29 +23,32 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     ur=[]
     tite=[]
     if url == 'http://www.thelatinlibrary.com/piccolomini.carmen.html':
+        verse = 0
         for p in getp:
             # make sure it's not a paragraph without the main text
             try:
-                if p['class'][0].lower() in ['border', 'shortborder', 'smallboarder', 'margin',
+                if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
                                              'internal_navigation']:  # these are not part of the main t
                     continue
             except:
                 pass
-            sen = p.text
-            sen = sen.strip()
-            if sen.startswith('Carmina'):
-                chapter = sen
-            else:
-                s1 = sen.split('\n')
-                i = 1
-                for s in s1:
-                    if s != '':
-                        sentn = s.strip()
-                        num = i
-                        cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                    (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                     num, sentn, url, 'prose'))
-                        i += 1
+            # find chapter
+            chapter_f = p.get_text().strip()
+            if chapter_f.startswith("Carmina"):
+                chapter = chapter_f
+                verse = 0
+                continue
+            verses = re.split('\n', chapter_f)
+            for v in verses:
+                if v is None:
+                    continue
+                elif v.isspace() or v == '':
+                    continue
+                # verse number assignment.
+                verse+=1
+                cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                          (None, collectiontitle, title, 'Latin', author, date, chapter,
+                           verse, v.strip(), url, 'poetry'))
 
     elif url == 'http://www.thelatinlibrary.com/piccolomini.turcos.html':
         for p in getp:

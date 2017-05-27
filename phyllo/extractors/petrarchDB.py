@@ -100,7 +100,7 @@ def main():
 
     author = biggsSOUP.title.string
     author = 'Francis'+' '+author.strip()
-    collectiontitle = biggsSOUP.div.contents[0].strip()
+    collectiontitle = 'FRANCISCVS PETRARCHA'
     date = '-'
 
     title = []
