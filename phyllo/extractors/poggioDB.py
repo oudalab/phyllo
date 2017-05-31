@@ -57,11 +57,11 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title='GIAN FRANCESCO POGGIO BRACCIOLINI FACETIAE'
+    title='FACETIAE'
 
     author = 'Poggio Bracciolini'
     author = author.strip()
-    collectiontitle='GIAN FRANCESCO POGGIO BRACCIOLINI FACETIAE'
+    collectiontitle='GIAN FRANCESCO POGGIO BRACCIOLINI'
     date = '-'
 
     with sqlite3.connect('texts.db') as db:

@@ -71,11 +71,11 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title='CARMINA EROTICA SELECTA GIOVANNI GIOVIANO PONTANO'
+    title='CARMINA EROTICA SELECTA'
 
     author = 'Giovanni Pontano'
     author = author.strip()
-    collectiontitle='CARMINA EROTICA SELECTA'
+    collectiontitle='GIOVANNI GIOVIANO PONTANO'
     date = '1429-1503'
 
     with sqlite3.connect('texts.db') as db:
