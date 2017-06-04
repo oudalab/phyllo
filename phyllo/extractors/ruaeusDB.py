@@ -1,3 +1,5 @@
+# has organizational issues everywhere.
+
 import sqlite3
 import urllib
 import re
@@ -43,6 +45,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                 sen = p.text
                 k = 1
                 for s in sent_tokenize(sen):
+                    if s.strip().startswith("Liber"):
+                        s = s.replace(chapter,'')
                     if s.isupper():
                         g = 1
                     else:
@@ -58,6 +62,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                 sen = p.text
                 k = 1
                 for s in sent_tokenize(sen):
+                    if s.strip().startswith("Liber"):
+                        s = s.replace(chapter,'')
                     sentn = s
                     num = k
                     cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
@@ -89,16 +95,16 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title='scripsit Carolus Ruaeus (soc. Iesu.) ex libro "ad usum serenissimi Delphini, Philadelphia MDCCCXXXII p. Ch. n. '
+    title='Argumentum Aeneidos cum XII librorum argumentis scripsit Carolus Ruaeus (soc. Iesu.) ex libro ' \
+          '"ad usum serenissimi Delphini, Philadelphia MDCCCXXXII p. Ch. n. '
 
-    author = 'Ruaeus Aeneid'
-    author = author.strip()
-    collectiontitle='Argumentum Aeneidos cum XII librorum argumentis'
+    author = 'Ruaeus'
+    collectiontitle='Ruaeus Aeneid'
     date = '-'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Arthur Rimbaud'")
+        c.execute("DELETE FROM texts WHERE author = 'Ruaeus'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 
