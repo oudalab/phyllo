@@ -46,9 +46,7 @@ def main():
     title = 'DE ORTU ET TEMPORE ANTICHRISTI'
 
     author = 'Adso Deruensis'
-    author = author.strip()
-    collectiontitle = 'DE ORTU ET TEMPORE ANTICHRISTI'
-    collectiontitle = collectiontitle.strip()
+    collectiontitle = author.upper()
     date = '10th century'
 
     with sqlite3.connect('texts.db') as db:

@@ -4,9 +4,6 @@ import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from phyllo.phyllo_logger import logger
-import regex
-
-from regex import Regex
 
 import nltk
 
@@ -97,7 +94,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
 
 
 def main():
-    # collection name: Abelard/Abaelard
+    # collection name: alanus de insulis
     abeURL = 'http://www.thelatinlibrary.com/alanus.html'
     siteURL = 'http://www.thelatinlibrary.com'
     abeOpen = urllib.request.urlopen(abeURL)

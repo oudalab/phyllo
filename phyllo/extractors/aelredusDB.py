@@ -31,6 +31,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             num = 1
             for s in sent_tokenize(sen):
                 sentn = s.strip()
+                if sentn == '': # skip empty
+                    continue
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,
                              num, sentn, url, 'prose'))
@@ -48,9 +50,7 @@ def main():
     title = 'DE AMICITIA'
 
     author = 'Aelredus Rievallensis'
-    author = author.strip()
-    collectiontitle = 'Aelredus Rievallensis: de Amicitia'
-    collectiontitle = collectiontitle.strip()
+    collectiontitle = author.upper()
     date = '-'
 
     with sqlite3.connect('texts.db') as db:

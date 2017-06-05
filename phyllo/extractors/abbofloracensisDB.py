@@ -43,9 +43,7 @@ def main():
     title = 'PASSIO SANCTI EDMUNDI REGIS ET MARTYRIS'
 
     author = 'Abbo Floriacensis'
-    author = author.strip()
-    collectiontitle = 'PASSIO SANCTI EDMUNDI REGIS ET MARTYRIS'
-    collectiontitle = collectiontitle.strip()
+    collectiontitle = author.upper()
     date = '945/50 - 1004'
 
     with sqlite3.connect('texts.db') as db:
