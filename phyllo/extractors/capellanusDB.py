@@ -15,13 +15,15 @@ nltk.download('punkt')
 from nltk import sent_tokenize
 
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
-    if url == 'http://www.thelatinlibrary.com/alanus/alanus1.html':
+    if url == 'http://www.thelatinlibrary.com/capellanus/capellanus2.html':
         chapter = '-'
         s1 = []
-        num = ''
+        num = 0
         [e.extract() for e in soup.find_all('br')]
         [e.extract() for e in soup.find_all('table')]
+        [e.extract() for e in soup.find_all('div')]
         getp = soup.find_all('p')
+        i = 0
         for p in getp:
             # make sure it's not a paragraph without the main text
             try:
@@ -32,39 +34,38 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                 pass
             if p.b:
                 chapter = p.b.text
+                chapter = chapter.strip()
             else:
                 sen = p.text
-                sen = sen.replace('\xa0\xa0\xa0\xa0\xa0', '')
                 sen = sen.strip()
-                s1 = sen.split('[')
-                #s1 = sent_tokenize(sen)
-
-                for s in s1:
-                    if s.startswith('0'):
-                        num = s[:5]
-                        sentn = s[6:]
-                        sentn = sentn.strip()
+                sen1 = ''.join([i for i in sen if not i.isdigit()])
+                sen1 = sen1.replace('[]', '')
+                sen1 = sen1.strip()
+                j=1
+                if i < 400:
+                    for s in sent_tokenize(sen1):
+                        sentn = s
                         cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                     (None, collectiontitle, title, 'Latin', author, date, chapter,
                                      num, sentn, url, 'prose'))
-                    else:
-                        if num.startswith('0'):
-                            num = '0482C'
-                        else:
-                            num = '-'
-                        if s != '':
-                            sentn = s
-                            sentn = sentn.strip()
-                            cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                        (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                         num, sentn, url, 'prose'))
+                        num+=1
+                        i += 1
+                else:
+                    for s in sen1.split('\n'):
+                        sentn = s
+                        cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                                    (None, collectiontitle, title, 'Latin', author, date, chapter,
+                                     num, sentn, url, 'prose'))
+                        num+=1
     else:
         chapter = '-'
         s1 = []
-        num = '-'
+        num = 0
         [e.extract() for e in soup.find_all('br')]
         [e.extract() for e in soup.find_all('table')]
+        [e.extract() for e in soup.find_all('div')]
         getp = soup.find_all('p')
+        i = 0
         for p in getp:
             # make sure it's not a paragraph without the main text
             try:
@@ -73,32 +74,28 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                     continue
             except:
                 pass
-            i = 1
             if p.b:
                 chapter = p.b.text
+                chapter = chapter.strip()
             else:
                 sen = p.text
                 sen = sen.strip()
-                if sen.isupper():
-                    chapter = sen
-                elif sen.startswith('['):
-                    num = sen[sen.find("[")+1:sen.find("]")]
-                else:
-                    if num == '-':
-                        num = str(i)
-                        i += 1
-                    else:
-                        for s in sent_tokenize(sen):
-                            sentn = s.strip()
-                            cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                        (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                         num, sentn, url, 'prose'))
-
+                sen1 = ''.join([i for i in sen if not i.isdigit()])
+                sen1 = sen1.replace('[]', '')
+                sen1 = sen1.strip()
+                num = 1
+                if i < 400:
+                    for s in sent_tokenize(sen1):
+                        sentn = s
+                        cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                                    (None, collectiontitle, title, 'Latin', author, date, chapter,
+                                     num, sentn, url, 'prose'))
+                        num+=1
 
 
 def main():
     # collection name: Abelard/Abaelard
-    abeURL = 'http://www.thelatinlibrary.com/alanus.html'
+    abeURL = 'http://www.thelatinlibrary.com/capellanus.html'
     siteURL = 'http://www.thelatinlibrary.com'
     abeOpen = urllib.request.urlopen(abeURL)
     soup = BeautifulSoup(abeOpen, "html5lib")
@@ -110,14 +107,14 @@ def main():
         textsURL.append("{}/{}".format(siteURL, a['href']))
     # remove some unnecessary urls
     while ("http://www.thelatinlibrary.com/index.html" in textsURL):
-        textsURL.remove("http://www.thelatinlibrary.com/medieval.html")
+        textsURL.remove("http://www.thelatinlibrary.com/medieval")
         textsURL.remove("http://www.thelatinlibrary.com/index.html")
         textsURL.remove("http://www.thelatinlibrary.com/classics.html")
     logger.info("\n".join(textsURL))
 
     author = soup.title.string
     author = author.strip()
-    collectiontitle = soup.p.contents[0].strip()
+    collectiontitle = soup.td.contents[0].strip()
     date = soup.span.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
     date = date.strip()
 
@@ -131,12 +128,13 @@ def main():
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Alain de Lille'")
+        c.execute("DELETE FROM texts WHERE author = 'Andreas Capellanus'")
         for u in textsURL:
             uOpen = urllib.request.urlopen(u)
             gestSoup = BeautifulSoup(uOpen, 'html5lib')
             parseRes2(gestSoup, title[i], u, c, author, date, collectiontitle)
             i = i + 1
-            
+
+
 if __name__ == '__main__':
     main()
