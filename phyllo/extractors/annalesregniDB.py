@@ -10,7 +10,7 @@ nltk.download('punkt')
 from nltk import sent_tokenize
 
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
-    chapter = 1
+    chapter = "-"
     sen = ""
     num = 1
     [e.extract() for e in soup.find_all('br')]
@@ -27,18 +27,25 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         sen = p.text
         sen = sen.strip()
         sen1 = ''.join([i for i in sen if not i.isdigit()])
+        if sen.startswith("["):
+            chapter = sen[1]+sen[2]+sen[3]
+            if sen[1] == '*':
+                chapter += sen[4]
+            num = 1
+        else:
+            num +=1
+
         sen1 = sen1.replace('[*]', '')
         sen1 = sen1.replace('[]', '')
         sen1 = sen1.strip()
         sentn = sen1
-        if sentn.startswith('DCC'):
-            num+=1
-        else:
-            num = 1
+
+        if sentn == '':
+            continue
         cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                         (None, collectiontitle, title, 'Latin', author, date, chapter,
                          num, sentn, url, 'prose'))
-        chapter += 1
+
 
 
 def main():

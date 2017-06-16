@@ -31,6 +31,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             sen = p.text
             for s in sent_tokenize(sen):
                 sentn = s.strip()
+                if sentn == '':
+                    continue
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,
                              num, sentn, url, 'prose'))
@@ -45,11 +47,10 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title = 'PETRI ALFONSI DISCIPLINA CLERICALIS'
+    title = biggsSOUP.title.string.split(":")[1].strip()
 
-    author = 'Peter Alfonsi'
-    author = author.strip()
-    collectiontitle = 'Peter Alfonsi: Disciplina clericalis'
+    author = biggsSOUP.title.string.split(":")[0].strip()
+    collectiontitle = biggsSOUP.p.get_text().strip()
     collectiontitle = collectiontitle.strip()
     date = '-'
 
