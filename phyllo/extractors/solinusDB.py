@@ -1,12 +1,9 @@
-# probably going to end up using URLs for title assignments
-# b/c the edition is listed nowhere in the HTML with the actual text
-
 import sqlite3
 import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # Problems:
 # mommsen 2nd ed. : verse assignment issues b/c some verses are split across paragraphs
@@ -52,7 +49,7 @@ def main():
                 title = "DE MIRABILIBUS MUNDI: Mommsen 1st edition (1864)"
             else:
                 title = "DE MIRABILIBUS MUNDI: C.L.F. Panckoucke edition (Paris 1847)"
-            print(title)  # see what is screwed up when it inevitably is
+            logger.info(title)  # see what is screwed up when it inevitably is
 
             if title.startswith("DE MIRABILIBUS MUNDI: Mommsen 2nd edition (1895)"):
 

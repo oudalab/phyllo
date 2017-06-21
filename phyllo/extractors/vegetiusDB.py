@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # seems to work fine
 # should probably check on chapter divisions
@@ -31,7 +31,7 @@ def main():
     collOpen = urllib.request.urlopen(collURL)
     collSOUP = BeautifulSoup(collOpen, 'html5lib')
     author = collSOUP.title.string.strip()
-    colltitle = "EPITOMA REI MILITARIS LIBRI IIII"
+    colltitle = collSOUP.p.string.strip()
     date = "no date found"
     textsURL = getBooks(collSOUP)
 
@@ -43,7 +43,7 @@ def main():
             openurl = urllib.request.urlopen(url)
             textsoup = BeautifulSoup(openurl, 'html5lib')
             title = textsoup.title.string.replace("Vegetius", "Epiroma Rei Militaris").strip()
-            print(title)
+            logger.info(title)
             chapter = -1
             verse = 0
 
@@ -128,7 +128,7 @@ def main():
                         except:
                             text = pstring
                             verses.append(text)
-                    print(chapter)
+                    logger.info(chapter)
 
 
                 for v in verses:
