@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # works as intended but some numbering questions in Carmina
 
@@ -45,7 +45,7 @@ def main():
                 title = textsoup.title.string.split(':')[1].strip()
             except:
                 title = textsoup.title.string.strip()
-            print(title)
+            logger.info(title)
 
             if title.startswith("Historia Langobardorum"):
 

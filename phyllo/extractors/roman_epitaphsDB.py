@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 
 # this works
@@ -92,6 +92,8 @@ def main():
                 for v in verses:
                     if v.startswith("The Miscellany"):
                         continue  # ignore links at the end
+                    if v.strip() == '':
+                        continue  # no empty cells! no empty cells! rah, rah!
                     # verse number assignment.
                     verse += 1
                     c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",

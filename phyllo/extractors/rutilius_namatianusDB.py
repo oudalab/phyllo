@@ -12,7 +12,7 @@ def main():
     collOpen = urllib.request.urlopen(collURL)
     collSOUP = BeautifulSoup(collOpen, 'html5lib')
     author = collSOUP.title.string.split(":")[0].strip()
-    colltitle = collSOUP.title.string.split(":")[1].strip()
+    colltitle = author.upper()
     date = "no date found"
 
     textsURL = [collURL]
@@ -25,10 +25,9 @@ def main():
         for url in textsURL:
             chapter = "-1"
             verse = 0
-            title = colltitle
             openurl = urllib.request.urlopen(url)
             textsoup = BeautifulSoup(openurl, 'html5lib')
-
+            title = textsoup.title.string.split(":")[0].strip()
             getp = textsoup.find_all('p')
 
             for p in getp:
