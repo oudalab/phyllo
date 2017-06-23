@@ -42,6 +42,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             if sen != '':
                 for s in sen.split('\n'):
                     sentn = s
+                    if sentn == '':
+                        continue
                     cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                 (None, collectiontitle, title, 'Latin', author, date, chapter,
                                  num, sentn, url, 'prose'))
@@ -56,12 +58,10 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title = 'Baldo: Novus Aesopus'
+    title = 'Novus Aesopus'
 
     author = 'Baldo'
-    author = author.strip()
     collectiontitle = 'BALDO NOUUS ESOPUS'
-    collectiontitle = collectiontitle.strip()
     date = '-'
 
     with sqlite3.connect('texts.db') as db:

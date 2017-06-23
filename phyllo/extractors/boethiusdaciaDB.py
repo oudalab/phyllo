@@ -16,6 +16,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     getp = soup.find_all('p')[:-1]
     i = len(getp)
     num = 0
+    verse = 0
     if url == 'http://www.thelatinlibrary.com/boethiusdacia/deaeternitate.html':
         for p in getp:
             # make sure it's not a paragraph without the main text
@@ -25,42 +26,35 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                     continue
             except:
                 pass
-            sen = p.text
-            sen = sen.strip()
-            s1 = ''.join([i for i in sen if not i.isdigit()])
-            if s1.startswith('['):
-                chapter+=1
-                s1 = s1[3:]
-                for s in sent_tokenize(s1):
-                    sentn = s.strip()
-                    cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                 num, sentn, url, 'prose'))
-                num = 0
+            passage = ''
+            text = p.get_text().strip()
+            # Skip empty paragraphs. and skip the last part with the collection link.
+            if len(text) <= 0 or text.startswith('Medieval Latin\n'):
+                continue
+            text = re.split('^\[([0-9]+)\.\]\s', text)
+            for element in text:
+                if element is None or element == '' or element.isspace():
+                    text.remove(element)
+            # The split should not alter sections with no prefixed roman numeral.
+            if len(text) > 1:
                 i = 0
-            elif s1.startswith('<'):
+                while text[i] is None:
+                    i += 1
+                chapter = text[i]
                 i += 1
-                s1 = s1[3:]
-                for s in sent_tokenize(s1):
-                    sentn = s.strip()
-                    cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                 num, sentn, url, 'prose'))
-
+                while text[i] is None:
+                    i += 1
+                passage = text[i].strip()
+                verse = 1
             else:
-                if num != 0:
-                    for s in sent_tokenize(s1):
-                        sentn = s.strip()
-                        cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                    (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                     num, sentn, url, 'prose'))
-                elif num == 0:
-                    for s in sent_tokenize(s1):
-                        num += 1
-                        sentn = s.strip()
-                        cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                                    (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                     num, sentn, url, 'prose'))
+                passage = text[0]
+                verse += 1
+            # check for that last line with the author name that doesn't need to be here
+            if passage.startswith('Medieval Latin'):
+                continue
+            cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                      (None, collectiontitle, title, 'Latin', author, date, chapter,
+                       verse, passage.strip(), url, 'prose'))
 
     else:
         for p in getp:
@@ -72,6 +66,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             except:
                 pass
             chapter += 1
+            num = 0
             sen = p.text
             sen = sen.strip()
             for s in sent_tokenize(sen):
