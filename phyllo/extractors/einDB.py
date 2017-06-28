@@ -39,12 +39,13 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             if s1.startswith('[]'):
                 i += 1
                 chapter = str(i)
+                num = 0
                 for s in sent_tokenize(s1):
                     sentn = s
                     num += 1
                     cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                 (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                 num, sentn, url, 'prose'))
+                                 num, sentn.replace('[] ',''), url, 'prose'))
             else:
                 for s in sent_tokenize(s1):
                     sentn = s

@@ -11,13 +11,12 @@ from nltk import sent_tokenize
 
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     chapter = 0
+    num = 0
     sen = ""
-    num = 1
     [e.extract() for e in soup.find_all('br')]
     [e.extract() for e in soup.find_all('table')]
     [e.extract() for e in soup.find_all('font')]
     getp = soup.find_all('p')
-    #print(getp)
     i = 1
     for p in getp:
         # make sure it's not a paragraph without the main text
@@ -31,10 +30,10 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         if p.b:
             chapter = p.b.text
             chapter = chapter.strip()
+            num = 0
         else:
             sen = p.text
             sen = sen.strip()
-            num = 0
             for s in sent_tokenize(sen):
                 sentn = s
                 num += 1
@@ -53,15 +52,13 @@ def main():
 
     title = 'De Expugnatione Terrae Sanctae per Saladinum'
 
-    author = 'Expugnatione'
-    author = author.strip()
+    author = 'Anonymous'
     collectiontitle = 'DE EXPUGNATIONE TERRAE SANCTAE PER SALADINUM'
-    collectiontitle = collectiontitle.strip()
     date = '-'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Expugnatione'")
+        c.execute("DELETE FROM texts WHERE title = 'DE EXPUGNATIONE TERRAE SANCTAE PER SALADINUM'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 

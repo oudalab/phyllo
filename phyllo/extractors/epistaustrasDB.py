@@ -12,7 +12,7 @@ from nltk import sent_tokenize
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     chapter = 0
     sen = ""
-    num = 1
+    num = 0
     [e.extract() for e in soup.find_all('br')]
     [e.extract() for e in soup.find_all('table')]
     [e.extract() for e in soup.find_all('font')]
@@ -36,6 +36,8 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             sen = sen.strip()
             for s in sent_tokenize(sen):
                 sentn = s
+                if len(sentn.strip()) < 2:
+                    continue
                 num += 1
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,
@@ -51,7 +53,7 @@ def main():
 
     title = 'Epistolae Austrasicae'
 
-    author = 'Austrasicae'
+    author = 'various'
     author = author.strip()
     collectiontitle = 'EPISTOLAE AUSTRASICAE SELECTAE'
     collectiontitle = collectiontitle.strip()
@@ -59,7 +61,7 @@ def main():
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Einhard'")
+        c.execute("DELETE FROM texts WHERE title = 'EPISTOLAE AUSTRASICAE SELECTAE'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 
