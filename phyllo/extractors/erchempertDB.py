@@ -12,7 +12,7 @@ from nltk import sent_tokenize
 def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     chapter = 0
     sen = ""
-    num = 1
+    num = 0
     [e.extract() for e in soup.find_all('br')]
     [e.extract() for e in soup.find_all('table')]
     [e.extract() for e in soup.find_all('font')]
@@ -33,8 +33,11 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         s1 = s1.strip()
         if s1.startswith('.'):
             chapter += 1
+            num = 0
             for s in sent_tokenize(s1):
                 sentn = s
+                if len(sentn) < 2:
+                    continue
                 num += 1
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,

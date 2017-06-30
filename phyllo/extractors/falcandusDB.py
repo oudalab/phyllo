@@ -61,12 +61,10 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title = 'Hugo Falcandus'
+    title = 'LIBER DE REGNO SILICAE'
 
     author = 'Hugo Falcandus'
-    author = author.strip()
-    collectiontitle = 'HUGO FALCANDUS LIBER DE REGNO SICILIE'
-    collectiontitle = collectiontitle.strip()
+    collectiontitle = author.upper()
     date = '-'
 
     with sqlite3.connect('texts.db') as db:
