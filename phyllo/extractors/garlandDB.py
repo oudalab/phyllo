@@ -39,7 +39,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         if sen != '':
             if len(s1) < 16:
                 chapter += 1
-                num = 0
+                # num = 0 # based on how verses are listed, it seems unnecessary to reset verse number
             else:
                 for s in s1.split('\n'):
                     sentn = s.strip()
@@ -57,14 +57,12 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title = 'John of Garland'
+    collectiontitle = 'John of Garland'
 
     author = 'John of Garland'
-    author = author.strip()
-    collectiontitle = 'INTECUMENTA SUPER OVIDIUM METAMORPHOSEOS SECUNDUM MAGISTRUM IOHANNEM ANGLICUM'
-    collectiontitle = collectiontitle.strip()
-    date = '1246 A.D.'
-
+    title = 'INTECUMENTA SUPER OVIDIUM METAMORPHOSEOS SECUNDUM MAGISTRUM IOHANNEM ANGLICUM'
+    date = '-'
+    # 1246 A.D. is what used to be here, but I'm not sure where it came from or if it's the actual date..
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
         c.execute("DELETE FROM texts WHERE author = 'John of Garland'")

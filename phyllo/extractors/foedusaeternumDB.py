@@ -51,15 +51,13 @@ def main():
 
     title = 'Eternal Bond of Brothers'
 
-    author = 'AETERNVM'
-    author = author.strip()
+    author = 'Anonymous'
     collectiontitle = 'FOEDVS AETERNVM FRATRUM'
-    collectiontitle = collectiontitle.strip()
     date = 'August 1291'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'AETERNVM'")
+        c.execute("DELETE FROM texts WHERE title = 'FOEDVS AETERNVM FRATRUM'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 

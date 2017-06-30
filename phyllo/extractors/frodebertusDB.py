@@ -38,14 +38,6 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         else:
             sen = p.text
             sen = sen.strip()
-            sen = sen.replace('—', '')
-            sen = sen.replace('[', '')
-            sen = sen.replace(']', '')
-            sen = sen.replace('..............................', '')
-            sen = sen.replace('....................', '')
-            sen = sen.replace('................', '')
-            sen = sen.replace('...', '')
-            sen = sen.strip()
             num = 0
             if sen != '':
                 for s in sen.split('\n'):
@@ -66,10 +58,8 @@ def main():
     title = 'Frodebertus & Importunus'
 
     author = 'Frodebertus & Importunus'
-    author = author.strip()
     collectiontitle = 'FRODEBERTUS AND IMPORTUNUS'
-    collectiontitle = collectiontitle.strip()
-    date = 'August 1291'
+    date = '-'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
