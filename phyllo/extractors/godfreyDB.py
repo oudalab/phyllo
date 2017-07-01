@@ -42,7 +42,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                 num += 1
                 cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                             (None, collectiontitle, title, 'Latin', author, date, chapter,
-                             num, sentn, url, 'prose'))
+                             num, sentn, url, 'poetry'))
             else:
                 chapter = p.i.text
                 chapter = chapter.strip()
@@ -80,7 +80,7 @@ def main():
 
     author = anselmSOUP.title.string
     author = author.strip()
-    collectiontitle = anselmSOUP.span.contents[0].strip()
+    collectiontitle = author.upper()
     date = anselmSOUP.span.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
 
     title = []
