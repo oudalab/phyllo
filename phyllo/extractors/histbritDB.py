@@ -16,7 +16,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
     num = 1
     [e.extract() for e in soup.find_all('br')]
     [e.extract() for e in soup.find_all('table')]
-    [e.extract() for e in soup.find_all('span')]
+    # [e.extract() for e in soup.find_all('span')]
     [e.extract() for e in soup.find_all('a')]
     for x in soup.find_all():
         if len(x.text) == 0:
@@ -33,16 +33,32 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         except:
             pass
         if p.b:
-            chapter = p.b.text
-            chapter = chapter.strip()
-            num = 0
+            if p.b.text.strip().isnumeric():
+                num = p.b.text.strip()
+                sen = p.text
+                sen = sen.strip()
+                if sen != '':
+                    for s in sen.split('\n'):
+                        sentn = s.strip()
+                        if len(sentn) < 2:
+                            continue
+                        if sentn.startswith(num):
+                            sentn = sentn.replace(num, '').strip()
+                        cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                                    (None, collectiontitle, title, 'Latin', author, date, chapter,
+                                     num, sentn, url, 'prose'))
+
+            else:
+                chapter = p.b.text
+                chapter = chapter.strip()
         else:
             sen = p.text
             sen = sen.strip()
             if sen != '':
                 for s in sen.split('\n'):
                     sentn = s.strip()
-                    num += 1
+                    if len(sentn) < 2:
+                        continue
                     cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                 (None, collectiontitle, title, 'Latin', author, date, chapter,
                                  num, sentn, url, 'prose'))
@@ -58,15 +74,15 @@ def main():
 
     title = 'Historia Brittonum'
 
-    author = 'Theodore Mommsen'
+    author = 'Anonymous'
     author = author.strip()
     collectiontitle = 'HISTORIA BRITTONUM'
     collectiontitle = collectiontitle.strip()
-    date = '1190'
+    date = '-'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Theodore Mommsen'")
+        c.execute("DELETE FROM texts WHERE title = 'HISTORIA BRITTONUM'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 

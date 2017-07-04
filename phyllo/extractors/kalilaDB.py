@@ -59,7 +59,7 @@ def main():
 
     title = 'Liber Kalilae et Dimnae'
 
-    author = 'Kalilae'
+    author = 'Kalila' # doesn't seem to be the actual author, but there's no evidence against either
     author = author.strip()
     collectiontitle = 'LIBER KALILAE ET DIMNAE'
     collectiontitle = collectiontitle.strip()
@@ -67,7 +67,7 @@ def main():
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Kalilae'")
+        c.execute("DELETE FROM texts WHERE author = 'Kalila'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 

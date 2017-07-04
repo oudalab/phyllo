@@ -45,7 +45,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                     num += 1
                     cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                 (None, collectiontitle, title, 'Latin', author, date, chapter,
-                                 num, sentn, url, 'prose'))
+                                 num, sentn, url, 'poetry'))
 
 
 def main():
@@ -59,10 +59,8 @@ def main():
     title = 'Henry of Settimello: Elegia'
 
     author = 'Henry of Settimello'
-    author = author.strip()
-    collectiontitle = 'HENRY OF SETTIMELLO: ELEGIA'
-    collectiontitle = collectiontitle.strip()
-    date = '1190'
+    collectiontitle = 'ELEGIA'
+    date = 'fl. c. 1190?'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()

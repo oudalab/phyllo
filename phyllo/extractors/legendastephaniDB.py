@@ -4,27 +4,13 @@ import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup, NavigableString
 
-import nltk
 
-nltk.download('punkt')
+def parsecase1(ptags, c, colltitle, title, author, date, URL):
+    # ptags contains all <p> tags. c is the cursor object.
+    chapter = '-1'
+    verse = 1
 
-from nltk import sent_tokenize
-
-def parseRes2(soup, title, url, cur, author, date, collectiontitle):
-    chapter = 0
-    sen = ""
-    num = 1
-    [e.extract() for e in soup.find_all('br')]
-    [e.extract() for e in soup.find_all('table')]
-    [e.extract() for e in soup.find_all('span')]
-    [e.extract() for e in soup.find_all('a')]
-    for x in soup.find_all():
-        if len(x.text) == 0:
-            x.extract()
-    getp = soup.find_all('p')
-    #print(getp)
-    i = 0
-    for p in getp:
+    for p in ptags:
         # make sure it's not a paragraph without the main text
         try:
             if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
@@ -32,18 +18,35 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                 continue
         except:
             pass
-
-        chapter += 1
-        num = 0
-        sen = p.text
-        sen = sen.strip()
-        for s in sent_tokenize(sen):
-            sentn = s
-            num += 1
-            cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
-                        (None, collectiontitle, title, 'Latin', author, date, chapter,
-                         num, sentn, url, 'prose'))
-
+        passage = ''
+        text = p.get_text().strip()
+        # Skip empty paragraphs. and skip the last part with the collection link.
+        if len(text) <= 0 or text.startswith('Medieval\n'):
+            continue
+        text = re.split('^([0-9]+)\.\s|^([0-9]+)\.\.', text)
+        for element in text:
+            if element is None or element == '' or element.isspace():
+                text.remove(element)
+        # The split should not alter sections with no prefixed roman numeral.
+        if len(text) > 1:
+            i = 0
+            while text[i] is None:
+                i+=1
+            chapter = text[i]
+            i+=1
+            while text[i] is None:
+                i+=1
+            passage = text[i].strip()
+            verse = 1
+        else:
+            passage = text[0]
+            verse+=1
+        # check for that last line with the author name that doesn't need to be here
+        if passage.startswith('Medieval'):
+            continue
+        c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                  (None, colltitle, title, 'Latin', author, date, chapter,
+                   verse, passage.strip(), URL, 'prose'))
 
 
 def main():
@@ -56,7 +59,7 @@ def main():
 
     title = 'Legenda Maior Sancti Regis Stephani'
 
-    author = 'Regis Stephani'
+    author = 'Legenda Regis Stephani'
     author = author.strip()
     collectiontitle = 'LEGENDA MAIOR SANCTI REGIS STEPHANI'
     collectiontitle = collectiontitle.strip()
@@ -64,8 +67,8 @@ def main():
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Regis Stephani'")
-        parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
+        c.execute("DELETE FROM texts WHERE author = 'Legenda Regis Stephani'")
+        parsecase1(biggsSOUP.find_all('p'), c, collectiontitle, title, author, date, biggsURL)
 
 
 if __name__ == '__main__':

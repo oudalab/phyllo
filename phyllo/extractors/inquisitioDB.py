@@ -56,10 +56,8 @@ def main():
     title = 'Inquisitio'
 
     author = 'Inquisitio'
-    author = author.strip()
     collectiontitle = "AN ELEVENTH-CENTURY INQUISITION OF ST. AUGUSTINE'S CANTERBURY"
-    collectiontitle = collectiontitle.strip()
-    date = '1190'
+    date = '-'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()

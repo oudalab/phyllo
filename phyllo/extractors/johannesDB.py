@@ -58,10 +58,8 @@ def main():
 
     title = 'Johannes de Plano Carpini'
 
-    author = 'Johannes de Plano Carpini'
-    author = author.strip()
+    author = title
     collectiontitle = 'JOHANNES DE PLANO CARPINI LIBELLUS HISTORICUS IOANNIS DE PLANO CARPINI'
-    collectiontitle = collectiontitle.strip()
     date = '1246 A.D.'
 
     with sqlite3.connect('texts.db') as db:
