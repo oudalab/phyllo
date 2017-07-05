@@ -3,9 +3,9 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 
-# works as intended but some numbering questions in Carmina
+# works as intended
 
 def getBooks(soup):
     siteURL = 'http://www.thelatinlibrary.com'
@@ -45,7 +45,7 @@ def main():
                 title = textsoup.title.string.split(':')[1].strip()
             except:
                 title = textsoup.title.string.strip()
-            logger.info(title)
+            print(title)
 
             if title.startswith("Historia Langobardorum"):
 
@@ -170,7 +170,10 @@ def main():
                                 except:
                                     pass
                             if len(l.strip()) < 5:
-                                continue  # skip line numbers and stuff
+                                if not l.endswith("."):
+                                    continue  # skip line numbers
+                                else:
+                                    pass
                             verses.append(l)
                     else:
                         brtags = p.findAll('br')
@@ -201,7 +204,10 @@ def main():
                         if v.startswith('Paul Diaconus'):
                             continue
                         if len(v) < 5:
-                            continue  # skip line numbers and stuff
+                            if not v.endswith("."):
+                                continue  # skip line numbers
+                            else:
+                                pass  # skip line numbers and stuff
                         # verse number assignment.
                         verse += 1
                         c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
