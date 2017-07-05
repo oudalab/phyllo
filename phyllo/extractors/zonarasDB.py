@@ -3,7 +3,8 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
+
 
 
 def main():
@@ -81,6 +82,9 @@ def main():
                             continue
                         if v is None or v == '' or v.isspace():
                             continue
+                        if v.startswith("The translator"):
+                            continue
+                            # skip an english note
                         verse += 1
                         c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                                   (None, colltitle, title, 'Latin', author, date, chapter,
@@ -91,6 +95,9 @@ def main():
                             continue
                         if v is None or v == '' or v.isspace():
                             continue
+                        if v.startswith("End of"):
+                            continue
+                            # skip an english note
                         c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                               (None, colltitle, title, 'Latin', author, date, chapter,
                                verse, v.strip(), url, 'prose'))
