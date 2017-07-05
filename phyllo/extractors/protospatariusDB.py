@@ -57,17 +57,15 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title = 'Protospatariu: Breve Chronicon'
+    title = 'Breve Chronicon'
 
-    author = 'Protospatariu'
-    author = author.strip()
+    author = 'Protospatarius'
     collectiontitle = 'LUPUS PROTOSPATARIUS BARENSIS RERUM IN REGNO NEAPOLITANO GESTARUM BREVE CHRONICON'
-    collectiontitle = collectiontitle.strip()
     date = '-'
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
-        c.execute("DELETE FROM texts WHERE author = 'Protospatariu'")
+        c.execute("DELETE FROM texts WHERE author = 'Protospatarius'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 
 

@@ -67,7 +67,7 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title = 'Gregorius: Narratio de Mirabilibus Urbis Romae'
+    title = 'Narratio de Mirabilibus Urbis Romae'
 
     author = 'Gregorius'
     author = author.strip()

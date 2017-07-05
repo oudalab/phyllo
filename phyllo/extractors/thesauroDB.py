@@ -53,7 +53,7 @@ def main():
     biggsSOUP = BeautifulSoup(biggsOPEN, 'html5lib')
     textsURL = []
 
-    title = 'Johannes de Alta Silva: de Thesauro et Fure Astuto'
+    title = 'de Thesauro et Fure Astuto'
 
     author = 'Johannes de Alta Silva'
     author = author.strip()
