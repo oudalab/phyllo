@@ -181,6 +181,51 @@ def case3isNumeral(ptags):
             return True
 
 
+# This case parses poetry
+def parsePoem(ptags, c, colltitle, title, author, date, url):
+    chapter = -1
+    verse = 0
+    for p in ptags:
+        # make sure it's not a paragraph without the main text
+        try:
+            if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                         'internal_navigation']:  # these are not part of the main t
+                continue
+        except:
+            pass
+        # find chapter
+        chapter_f = p.find('b')
+        if chapter_f is not None:
+            chapter = p.get_text().strip()
+            verse = 0
+            continue
+        else:
+            brtags = p.findAll('br')
+            verses = []
+            try:
+                try:
+                    firstline = brtags[0].previous_sibling.strip()
+                except:
+                    firstline = brtags[0].previous_sibling.previous_sibling.strip()
+                verses.append(firstline)
+            except:
+                pass
+            for br in brtags:
+                try:
+                    text = br.next_sibling.next_sibling.strip()
+                except:
+                    text = br.next_sibling.strip()
+                if text is None or text == '' or text.isspace():
+                    continue
+                verses.append(text)
+        for v in verses:
+            # verse number assignment.
+            verse += 1
+            c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                      (None, colltitle, title, 'Latin', author, date, chapter,
+                       verse, v, url, 'poetry'))
+
+
 def getBooks(soup):
     siteURL = 'http://www.thelatinlibrary.com'
     textsURL = []
