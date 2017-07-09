@@ -81,7 +81,7 @@ def main():
                         continue
                     c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                               (None, colltitle, title, 'Latin', author, date, chapter,
-                               verse, p.get_text().strip(), url, 'poetry')) 
+                               verse, p.get_text().strip(), url, 'poetry'))
 
 
 
