@@ -46,7 +46,7 @@ def parsegel1(ptags, c, colltitle, title, author, date, URL):
                 continue
             if item == '' or item.isspace():
                 continue
-            if pattern.match(item):
+            if pattern.match(item) and len(item) < 7:
                 verse = item
                 continue
             else:
@@ -85,13 +85,13 @@ def parsegel2(ptags, c, colltitle, title, author, date, URL):
             continue
         text = ''.join(text).replace(chapter, '').strip()
         # Verses split by roman numerals followed by full stop
-        text = re.split('([IVX]+)\.\s', text)
+        text = re.split('(?<!C\.\s)([IVX]+)\.\s', text)
         for element in text:
             if element is None or element == '' or element.isspace():
                 text.remove(element)
         pattern = re.compile('([IVX]+)')
         for item in text:
-            if pattern.match(item):
+            if pattern.match(item) and len(item) < 7:
                 verse = item
                 continue
             else:
@@ -144,9 +144,11 @@ def main():
             # finally, parse
             if not url.endswith('capitula.shtml'):
                 parsegel1(getp, c, colltitle, title, author, date, url)
+                logger.info('Parsed ' + url)
             else:
                 parsegel2(getp, c, colltitle, title, author, date, url)
-            logger.info('Parsed '+url)
+                logger.info('Parsed ' + url)
+
 
 
     logger.info("Program runs successfully.")
