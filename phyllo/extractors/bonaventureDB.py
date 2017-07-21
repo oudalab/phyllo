@@ -48,8 +48,10 @@ def main():
 
                 chapter_f = p.find('b')
                 if chapter_f is not None or text.startswith("CAPUT"):
-                    if text.startswith("INCIPIT SPECULATIO PAUPERIS IN DESERTO"):
+                    if text.startswith("CAPUT PRIMUM"):
                         continue
+                    if text.startswith("INCIPIT SPECULATIO PAUPERIS IN DESERTO"):
+                        chapter = "CAPUT PRIMUM"
                     chapter = chapter + " " + text
                     print(chapter)
                     verse = 0
