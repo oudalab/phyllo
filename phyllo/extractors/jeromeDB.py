@@ -5,10 +5,6 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from phyllo_logger import logger
 
-# this is mostly good
-# problem: it doesn't catch all of the verses in Epistulae
-# no idea why really
-
 def getBooks(soup):
     siteURL = 'http://www.thelatinlibrary.com'
     textsURL = []
@@ -67,23 +63,24 @@ def main():
                     if chapter_f is not None:
                         chapter = chapter_f.string.strip()
                         print(chapter)
-                        verse = 0
+                        verse = 1
                         continue
 
                     else:
                         pstring = p.get_text()
                         pstring = pstring.strip()
-                        lines = re.split("(\[[0-9]+\] | \[[0-9]+\.[0-9]+\])", pstring)
+                        if re.match("\[[0-9]+\]", pstring):
+                            verse = pstring.split("\n")[0].strip()
+                            pstring = pstring.replace(verse, '')
+                        lines = re.split("(\[[0-9]+\.[0-9]+\])", pstring)
                         for l in lines:
-                            if l.startswith('St. Jerome'):
-                                continue
                             if l is None or l == '' or l.isspace():
                                 continue
-                            print("NEW ENTRY: " + l)
-                            if len (l) < 10:
+                            if l.startswith('St. Jerome'):
+                                continue
+                            if len (l) < 15:
                                 # this is a verse number
                                 verse = l
-                                print("THIS IS A VERSE")
                                 continue
                             # verse number assignment.
 
