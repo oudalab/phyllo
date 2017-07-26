@@ -92,6 +92,10 @@ def main():
 
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
+        c.execute(
+        'CREATE TABLE IF NOT EXISTS texts (id INTEGER PRIMARY KEY, title TEXT, book TEXT,'
+        ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
+        ' link TEXT, documentType TEXT)')
         c.execute("DELETE FROM texts WHERE author = 'Nithardus, Historiae'")
         for u in textsURL:
             uOpen = urllib.request.urlopen(u)

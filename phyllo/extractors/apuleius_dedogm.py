@@ -19,6 +19,10 @@ def infofetch(url, collectiontitle, author, date):
     getp = soup.findAll('p')[:-1]
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
+        c.execute(
+        'CREATE TABLE IF NOT EXISTS texts (id INTEGER PRIMARY KEY, title TEXT, book TEXT,'
+        ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
+        ' link TEXT, documentType TEXT)')
         # this program runs a few different titles in the collection, but not all.
         if url == 'http://www.thelatinlibrary.com/apuleius/apuleius.dog1.shtml':
             c.execute("DELETE FROM texts WHERE book = 'de Dogmate Platonis I'")

@@ -65,6 +65,10 @@ def main():
     # 1246 A.D. is what used to be here, but I'm not sure where it came from or if it's the actual date..
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
+        c.execute(
+        'CREATE TABLE IF NOT EXISTS texts (id INTEGER PRIMARY KEY, title TEXT, book TEXT,'
+        ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
+        ' link TEXT, documentType TEXT)')
         c.execute("DELETE FROM texts WHERE author = 'John of Garland'")
         parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
 

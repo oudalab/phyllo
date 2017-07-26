@@ -29,6 +29,10 @@ def main():
     date = aurSOUP.h2.contents[0].strip().replace('(', '').replace(')', '').replace(u"\u2013", '-')
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
+        c.execute(
+        'CREATE TABLE IF NOT EXISTS texts (id INTEGER PRIMARY KEY, title TEXT, book TEXT,'
+        ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
+        ' link TEXT, documentType TEXT)')
         c.execute("DELETE FROM texts WHERE author='Aurelius Victor'")
         title = ''
         for URL in textsURL:

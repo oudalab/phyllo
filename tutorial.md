@@ -103,6 +103,10 @@ After we store that list of URLs, we will need a loop to run through each link. 
 ```python
     with sqlite3.connect('texts.db') as db:
         c = db.cursor()
+        c.execute(
+        'CREATE TABLE IF NOT EXISTS texts (id INTEGER PRIMARY KEY, title TEXT, book TEXT,'
+        ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
+        ' link TEXT, documentType TEXT)')
         c.execute("DELETE FROM texts WHERE author='Sallust'")
 ```
 Firstly, we have a `with ... as` statement. What this statement does is create a connection via sqlite3 to the database stored in 'texts.db', a database file, and name the connection object `db`. Using `with` will automatically close the db when it reaches the end of what it encapsulates, so we don't need to worry about closing it.
