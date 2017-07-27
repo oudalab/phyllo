@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # chose to ignore internal numbering (I, II, etc.) in favor of numbering paragraphs
 # left internal numbers as part of text

@@ -21,7 +21,7 @@ import requests
 from bs4 import BeautifulSoup
 from pybloomfilter import BloomFilter
 
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 
 THELATINLIBRARY = "http://www.thelatinlibrary.com"

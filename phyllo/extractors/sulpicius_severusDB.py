@@ -3,9 +3,8 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
 
-# book 3 is missing from the Latin library
+
 
 def getBooks(soup):
     siteURL = 'http://www.thelatinlibrary.com'
@@ -19,19 +18,19 @@ def getBooks(soup):
     while ("http://www.thelatinlibrary.com/index.html" in textsURL):
         textsURL.remove("http://www.thelatinlibrary.com/index.html")
         textsURL.remove("http://www.thelatinlibrary.com/classics.html")
-        textsURL.remove("http://www.thelatinlibrary.com/christian")
+        textsURL.remove("http://www.thelatinlibrary.com/christian.html")
     logger.info("\n".join(textsURL))
     return textsURL
 
 
 def main():
     # The collection URL below.
-    collURL = 'http://www.thelatinlibrary.com/columba.html'
+    collURL = 'http://www.thelatinlibrary.com/sulpiciusseverus.html'
     collOpen = urllib.request.urlopen(collURL)
     collSOUP = BeautifulSoup(collOpen, 'html5lib')
     author = collSOUP.title.string.strip()
     colltitle = collSOUP.title.string.strip()
-    date = "no date found"
+    date = date = collSOUP.span.string.replace('(', '').replace(')', '').replace(u"\u2013", '-').strip()
     textsURL = getBooks(collSOUP)
 
     with sqlite3.connect('texts.db') as db:
@@ -41,13 +40,13 @@ def main():
         ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
         ' link TEXT, documentType TEXT)')
 
-        c.execute("DELETE FROM texts WHERE title = 'Life of St. Columba: Book I'")
-        c.execute("DELETE FROM texts WHERE title = 'Life of St. Columba: Book II'")
+        c.execute("DELETE FROM texts WHERE author = 'Sulpicius Severus'")
 
         for url in textsURL:
             openurl = urllib.request.urlopen(url)
             textsoup = BeautifulSoup(openurl, 'html5lib')
-            title = textsoup.title.string.strip()
+            title = textsoup.title.string.split(":")[1].strip()
+            print(title)
 
             chapter = -1
             verse = 0
@@ -65,16 +64,38 @@ def main():
                 text = p.get_text()
                 text = text.strip()
 
-                if p.find('b') is not None:
+                if text.startswith("LIBER"):
+                    continue
+                    # book headings handled elsewhere
+
+                if text.startswith("Praefatio"):
                     chapter = text
-                    print(chapter)
-                    verse = 0
                     continue
 
-                verses.append(text)
+
+                lines = re.split("\([0-9]\)", text)
+                if lines[0] is None or lines[0] == '' or lines[0].isspace():
+                    pass
+                else:
+                    chapter = lines[0]
+                    verse = 0
+                    lines.remove(lines[0])
+                    # work around chapter headings in different paragraphs
+
+                for l in lines:
+                    l = l.strip()
+                    if l.startswith('Christian'):
+                        continue
+                    if l.startswith('The '):
+                        continue
+                    if l is None or l == '' or l.isspace():
+                        continue
+                    verses.append(l)
 
                 for v in verses:
-                    if v.startswith('Christian Latin'):
+                    if v.startswith('Christian'):
+                        continue
+                    if v.startswith('The '):
                         continue
                     if v is None or v == '' or v.isspace():
                         continue
