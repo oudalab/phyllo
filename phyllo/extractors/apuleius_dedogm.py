@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 
 # scrapes information from a specific book in the collection
 def infofetch(url, collectiontitle, author, date):

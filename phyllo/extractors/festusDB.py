@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 
 # this code works as intended and should be good to go.
 # need to double check my decisions on chapter division.

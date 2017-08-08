@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 
 # A function to put entries in the table.
 # Note that this table only contains Chapter, Verse, and Passage for testing purposes.
@@ -50,7 +50,7 @@ def main():
     with sqlite3.connect("texts.db") as db:
         cursor = db.cursor()
         db.commit()
-        c.execute(
+        cursor.execute(
             'CREATE TABLE IF NOT EXISTS texts (id INTEGER PRIMARY KEY, title TEXT, book TEXT,'
             ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
             ' link TEXT, documentType TEXT)')

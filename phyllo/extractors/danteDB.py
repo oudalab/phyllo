@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 import nltk
 from itertools import cycle
 
@@ -40,10 +40,11 @@ def main():
         textsURL.append("{}/{}".format(siteURL, link))
 
     # remove some unnecessary urls
-    while ("http://www.thelatinlibrary.com/index.html" in textsURL):
+    while "http://www.thelatinlibrary.com/index.html" in textsURL:
         textsURL.remove("http://www.thelatinlibrary.com/index.html")
         textsURL.remove("http://www.thelatinlibrary.com/classics.html")
         textsURL.remove("http://www.thelatinlibrary.com/medieval.html")
+    if "http://www.thelatinlibrary.com/dante/vulgar.shtml" in textsURL:
         textsURL.remove("http://www.thelatinlibrary.com/dante/vulgar.shtml")
     logger.info("\n".join(textsURL))
 

@@ -42,7 +42,7 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
             num += 1
             cur.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
                         (None, collectiontitle, title, 'Latin', author, date, chapter,
-                         num, sentn, url, 'prose'))
+                         num, sen, url, 'prose'))
 
 def main():
     # get proper URLs

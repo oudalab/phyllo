@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 
 # chose to use internal numbers meaning there are some duplicate verse numbers. Check this.
 

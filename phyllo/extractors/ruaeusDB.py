@@ -5,7 +5,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup, NavigableString
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 import nltk
 from itertools import cycle
 

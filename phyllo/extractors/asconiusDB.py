@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 # Note: The original ordering of chapters and verses was extremely complex.
 # As a result, chapters are the bold headers and subsections are each p tag.
 

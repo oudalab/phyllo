@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 import nltk
 from itertools import cycle
 
@@ -44,7 +44,6 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
         s=''
         h=''
         g=''
-        global j
         j=1
         [e.extract() for e in soup.find_all('br')]
         for p in soup.findAll('p'):

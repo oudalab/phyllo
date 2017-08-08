@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 
 def parseLiber(ptags, c, colltitle, title, author, date, URL):
     # ptags contains all <p> tags. c is the cursor object.

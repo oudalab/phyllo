@@ -4,7 +4,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo.phyllo_logger import logger
+from phyllo_logger import logger
 
 
 def parsecoquin(ptags, c, colltitle, title, author, date, URL):
