@@ -7,15 +7,15 @@ import importlib
 import pkgutil
 # This is for importlib.import_module("extractor.<something>")
 
-import extractors
-from phyllo_logger import logger
+from phyllo import extractors
+from phyllo.phyllo_logger import logger
 
 
 def main():
     """Extract all the data parameters and create the database."""
 
     error_count = 0
-    prefix = "extractors."
+    prefix = "phyllo.extractors."
     for importer, modname, ispackage in pkgutil.iter_modules(extractors.__path__, prefix):
         # Ignore the templates
         if not modname.startswith(prefix+"0_"):

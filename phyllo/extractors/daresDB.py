@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # code works as intended.
 # question: what to do with "CORNELIUS NEPOS SALLUSTIO CRISPO S."?

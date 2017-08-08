@@ -3,7 +3,7 @@ import urllib
 import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 # Problems:
 # mommsen 2nd ed. : verse assignment issues b/c some verses are split across paragraphs

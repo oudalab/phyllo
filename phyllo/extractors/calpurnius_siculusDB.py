@@ -2,7 +2,7 @@ import sqlite3
 import urllib
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from phyllo_logger import logger
+from phyllo.phyllo_logger import logger
 
 def main():
     # The collection URL below.

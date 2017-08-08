@@ -1,15 +1,17 @@
-from setuptools import setup
+
+from setuptools import setup, find_packages
 
 setup(
     name="phyllo",
     version="0.1",
     description="PHilologicallY Linguistic LegwOrk.",
-    author="Christan Grant",
-    author_email="cgrant@ou.edu",
+    author="Jordan Nguyen, Christan Grant",
+    author_email="Jordan.Nguyen-1@ou.edu, cgrant@ou.edu",
     url="https://github.com/oudalab/phyllo",
     download_url="https://github.com/oudalab/phyllo",
     license='GPLv3',
-    packages=["phyllo", "phyllo.extractors"],
+    #packages=["phyllo", "phyllo.extractors"],
+    packages=find_packages(exclude=('tests', 'docs')),
     keywords=["latin", "search"],
     install_requires=[
         "cltk",

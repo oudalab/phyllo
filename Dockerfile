@@ -2,8 +2,8 @@ FROM alpine:latest
 
 MAINTAINER Christan Grant <cgrant@ou.edu>
 
-# Usage docker build -t cegme/oulatin-search .
-# docker run -dt -p 5000:5000 cegme/oulatin-search
+# Usage docker build -t cegme/phyllo .
+# docker run -dt -p 5000:5000 cegme/phyllo
 
 RUN apk update
 RUN apk add git curl vim strace tmux htop tar make
@@ -16,13 +16,15 @@ RUN pip3 install --upgrade pip &&\
 RUN apk update && apk add build-base git libffi-dev python3-dev wget
 RUN cd && wget http://www.sqlite.org/2017/sqlite-autoconf-3190300.tar.gz https://github.com/rogerbinns/apsw/releases/download/3.19.3-r1/apsw-3.19.3-r1.zip
 RUN cd && tar zxvf sqlite-autoconf-3190300.tar.gz && cd sqlite-autoconf-3190300/ && CPPFLAGS="-DSQLITE_ENABLE_FTS3_TOKENIZER=1" ./configure && make install
-RUN cd && unzip apsw-3.19.3-r1.zip && cd apsw-3.19.3-r1 && python3 setup.py build --enable-all-extensions install
+
+# TODO FIXME This line below may not work
+# RUN cd && unzip apsw-3.19.3-r1.zip && cd apsw-3.19.3-r1 && python3 setup.py build --enable-all-extensions install
+
 RUN pip3 install git+git://github.com/hideaki-t/sqlite-fts-python.git@apsw
 
 RUN pip3 install sqlitefts
 
-RUN mkdir /src
-RUN mkdir /src/templates
+RUN mkdir -p /src/templates
 
 COPY ./search/buildcode.sh /src
 COPY ./search/app.py /src
@@ -37,7 +39,9 @@ RUN cd /src && bash buildcode.sh
 
 ADD . /phyllo
 ADD . /search
-RUN cd /phyllo && pip3 install .
+# TODO debug this
+# RUN cd /phyllo/phyllo/ && pip3 install .
+RUN cd /phyllo/ && python3 setup.py install
 
 # Download the database file to /src
 RUN cd /src && python3 -c "import phyllo.data_extractor as d; d.main()"
@@ -47,4 +51,4 @@ RUN cd /src && python3 -c "import phyllo.data_extractor as d; d.main()"
 EXPOSE 5000
 WORKDIR /src
 #ENTRYPOINT ["python3"]
-#CMD ["/src/app.py"]
+CMD ["/src/app.py"]
