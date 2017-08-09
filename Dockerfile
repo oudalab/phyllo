@@ -51,4 +51,4 @@ RUN cd /src && python3 -c "import phyllo.data_extractor as d; d.main()"
 EXPOSE 5000
 WORKDIR /src
 #ENTRYPOINT ["python3"]
-CMD ["/src/app.py"]
+#CMD ["/src/app.py"]
