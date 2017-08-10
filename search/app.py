@@ -5,12 +5,6 @@ import sqlitefts as fts
 import os
 
 import search
-from search import OUWordTokenizer
-#import phyllo  # phyllo must be installed
-#from pympler.tracker import SummaryTracker
-
-from flask import Flask
-
 from flask import Flask
 from flask import abort
 from flask import request
@@ -24,22 +18,26 @@ from flask import render_template
 from flask import flash
 
 from flask_bootstrap import Bootstrap
+from search import OUWordTokenizer
+
+from flask import Flask
+from flask import request
 
 from phyllo.phyllo_logger import logger
 
 
-app = Flask(__name__)
+app = Flask('Phyllo')
+Bootstrap(app)
+connection = apsw.Connection('texts.db', flags=apsw.SQLITE_OPEN_READWRITE)
+c = connection.cursor()
+# Register with the connection
+fts.register_tokenizer(connection,
+                       'oulatin',
+                       fts.make_tokenizer_module(OUWordTokenizer('latin')))
 
 
 def setup():
     logger.info("Setting up the connnection.")
-    connection = apsw.Connection('texts.db', flags=apsw.SQLITE_OPEN_READWRITE)
-    c = connection.cursor()
-
-    # Register with the connection
-    fts.register_tokenizer(connection,
-                           'oulatin',
-                           fts.make_tokenizer_module(OUWordTokenizer('latin')))
 
     # Check if the virtual table exists
     c.execute(("SELECT count(*)"
@@ -58,6 +56,11 @@ def setup():
         c.execute("INSERT INTO text_idx (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
         c.execute("INSERT INTO text_idx_porter (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
         # Add the cursor to the app config
+        print('done insertion')
+        c.execute("SELECT id, title, book, author, link"
+             " FROM text_idx "
+             " WHERE text_idx MATCH 'cum'")
+        print(c.fetchall())
         app.config["cursor"] = c
 
     elif "cursor" not in app.config:
@@ -72,29 +75,33 @@ def setup():
 
 
 def do_search(query):
-    stmt1 = ("SELECT id, title, book, author, link"
+    stmt1 = ("SELECT title, book, author, link"
              " FROM text_idx "
-             " WHERE text_idx MATCH '{}'")
-    stmt2 = ("SELECT id, title, book, author, link"
+             " WHERE text_idx MATCH '{}';")
+    stmt2 = ("SELECT title, book, author, link"
              " FROM text_idx_porter"
-             " WHERE text_idx_porter MATCH '{}'")
+             " WHERE text_idx_porter MATCH '{}';")
 
     logger.info("Running the queries...")
     if "cursor" in app.config:
         logger.info("Running query 1...")
-        r1 = app.config["cursor"].execute(stmt1.format(query))
+        c.execute(stmt1.format(query))
+        r1 = list(c.fetchall())
+        print(stmt1.format(query))
         r1set = {x[1:] for x in r1}
         logger.info("Result Set 1: {}".format(type(r1)))
         logger.info("Result Set 1: {}".format(list(r1set)[:10]))
 
         logger.info("Running query 2...")
-        r2 = app.config["cursor"].execute(stmt2.format(query))
+        c.execute(stmt2.format(query))
+        r2 = list(c.fetchall())
         r2set = {y[1:] for y in r2}
         logger.info("Result Set 2: {}".format(type(r2)))
         logger.info("Result Set 2: {}".format(list(r2set)[:10]))
 
         # Union
-        r3 = list(r2set | r1set)
+        r3 = list(set(r1).union(set(r2)))
+        print(r3)
 
         logger.info("Joined query list: {}".format([z for z in r3]))
         logger.info("Total result set size: {}".format(len(r3)))
@@ -105,7 +112,7 @@ def do_search(query):
         return []
 
 
-@app.route('/search', methods=['GET'])
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     logger.info("/search {}|{}".format(request.args, request.method))
     if request.method == 'GET' and request.args['q'] is not None:
@@ -113,8 +120,7 @@ def search():
 
         logger.info("The query term is {}".format(query))
         result = do_search(query)
-
-        json.dumps(result)
+        return render_template('search.html', terms=query, results=result)
 
     else:
         logger.error("Could not make the query")
@@ -128,11 +134,14 @@ def hello_world():
     print("word_tokenizers")
     return json.dumps({"name": "test"})
 
+@app.route('/')
+def application():
+    setup()
+    return render_template('search.html', terms='', results='')
+
+
 
 if __name__ == '__main__':
-    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-        logger.info("Running setup...")
-        setup()
-
-    logger.info("Starting app...")
     app.run(host='0.0.0.0', port=5000, threaded=True, debug=True)
+    logger.info("Starting app...")
+

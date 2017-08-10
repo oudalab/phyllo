@@ -1,0 +1,28 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %} The Latin Library Search {% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+
+
+{% block content %}
+<form action={{ url_for('search') }}>
+    <input type="search" name="q" value="{{terms}}" />
+    <input type="submit" />
+</form>
+
+<hr/>
+
+<ul>
+{% if results %}
+    {% for hit in results %}
+    <li> {{hit[0]}} | {{hit[1]}} | {{hit[2]}} | <a href="{{hit[3]}}"> {{hit[3] | safe}}</a>
+    </li>
+    {% endfor %}
+{% endif %}
+</ul>
+
+{% endblock %}
