@@ -16,9 +16,7 @@ RUN pip3 install --upgrade pip &&\
 RUN apk update && apk add build-base git libffi-dev python3-dev wget
 RUN cd && wget http://www.sqlite.org/2017/sqlite-autoconf-3190300.tar.gz https://github.com/rogerbinns/apsw/releases/download/3.19.3-r1/apsw-3.19.3-r1.zip
 RUN cd && tar zxvf sqlite-autoconf-3190300.tar.gz && cd sqlite-autoconf-3190300/ && CPPFLAGS="-DSQLITE_ENABLE_FTS3_TOKENIZER=1" ./configure && make install
-
-# TODO FIXME This line below may not work
-# RUN cd && unzip apsw-3.19.3-r1.zip && cd apsw-3.19.3-r1 && python3 setup.py build --enable-all-extensions install
+RUN cd && unzip apsw-3.19.3-r1.zip && cd apsw-3.19.3-r1 && python3 setup.py build --enable-all-extensions install
 
 RUN pip3 install git+git://github.com/hideaki-t/sqlite-fts-python.git@apsw
 
@@ -29,10 +27,7 @@ RUN mkdir -p /src/templates
 COPY ./search/buildcode.sh /src
 COPY ./search/app.py /src
 COPY ./search/search.py /src
-COPY ./search/query.py /src
-COPY ./search/search.html /src/templates
-COPY ./search/search_results.html /src/templates
-COPY ./search/interface.py /src
+COPY ./search/templates/* /src/templates/
 COPY ./phyllo/phyllo_logger.py /src
 
 RUN cd /src && bash buildcode.sh
@@ -46,9 +41,11 @@ RUN cd /phyllo/ && python3 setup.py install
 # Download the database file to /src
 RUN cd /src && python3 -c "import phyllo.data_extractor as d; d.main()"
 
+RUN ["chmod", "+x", "/src/app.py"]
+
 #RUN cd /src && python3 -c "import app as f; f.tokenize()"
 
 EXPOSE 5000
 WORKDIR /src
 #ENTRYPOINT ["python3"]
-#CMD ["/src/app.py"]
+CMD ["python3","/src/app.py"]
