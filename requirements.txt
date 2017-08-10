@@ -1,1 +1,2 @@
 docker should be installed (https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
+docker compose should be installed (https://docs.docker.com/compose/install/#install-compose-on-linux-systems)
