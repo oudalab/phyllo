@@ -9,12 +9,22 @@
 
 
 {% block content %}
-<form action={{ url_for('search') }}>
-    <input type="search" name="q" value="{{terms}}" />
-    <input type="submit" />
-</form>
+<div class="container">
+    <h1>Search engine for The Latin Library</h1>
+    <form action={{ url_for('search') }}>
+        <div class="row">
+            <div class="form-group">
+                <label for="code">search with author name, book title or sentence</label>
+                <input class="form-control input-lg" type="search" name="q" value="{{terms}}">
+            </div>
+        </div>
 
-<hr/>
+        <div class="row">
+            <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </form>
+
+    <hr/>
 
 <ul>
 {% if results %}
@@ -24,5 +34,8 @@
     {% endfor %}
 {% endif %}
 </ul>
+</div>
 
 {% endblock %}
+
+
