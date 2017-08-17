@@ -307,6 +307,52 @@ def main():
                                       (None, colltitle, title, 'Latin', author, date, chapter,
                                        verse, item.strip(), URL, 'prose'))
 
+
+    # This case parses poetry
+    def parsePoem(ptags, c, colltitle, title, author, date, url):
+        chapter = -1
+        verse = 0
+        for p in ptags:
+            # make sure it's not a paragraph without the main text
+            try:
+                if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
+                                             'internal_navigation']:  # these are not part of the main t
+                    continue
+            except:
+                pass
+            # find chapter
+            chapter_f = p.find('b')
+            if chapter_f is not None:
+                chapter = p.get_text().strip()
+                verse = 0
+                continue
+            else:
+                brtags = p.findAll('br')
+                verses = []
+                try:
+                    try:
+                        firstline = brtags[0].previous_sibling.strip()
+                    except:
+                        firstline = brtags[0].previous_sibling.previous_sibling.strip()
+                    verses.append(firstline)
+                except:
+                    pass
+                for br in brtags:
+                    try:
+                        text = br.next_sibling.next_sibling.strip()
+                    except:
+                        text = br.next_sibling.strip()
+                    if text is None or text == '' or text.isspace():
+                        continue
+                    verses.append(text)
+            for v in verses:
+                # verse number assignment.
+                verse += 1
+                c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                          (None, colltitle, title, 'Latin', author, date, chapter,
+                           verse, v, url, 'poetry'))
+
+
     def getBooks(soup):
         textsURL = []
         # get links to books in the collection
@@ -397,7 +443,6 @@ def main():
                     'http://www.thelatinlibrary.com/cicero/paradoxa.shtml',
                     'http://www.thelatinlibrary.com/cicero/partitione.shtml'
                     ]
-# the following two lists have not been added to the database yet.
     getURLList = ['http://www.thelatinlibrary.com/cicero/legagr.shtml',
                   'http://www.thelatinlibrary.com/cicero/ver.shtml',
                   'http://www.thelatinlibrary.com/cicero/cat.shtml',
@@ -442,15 +487,14 @@ def main():
                 # url refers to the url of the collection's  collection. urlt is the url that the text/passages are found
                 if url.endswith("legagr.shtml") or urlt.endswith("caecilium.shtml") or url.endswith("cat.shtml") \
                         or url.endswith('phil.shtml') or url.endswith('oratore.shtml') or urlt.endswith("fin1.shtml") \
-                        or urlt.endswith('fin2.shtml') or urlt.endswith('fin3.shtml') or (
-                    url.endswith('nd.shtml') and not
-                urlt.endswith('nd3.shtml')):
+                        or urlt.endswith('fin2.shtml') or urlt.endswith('fin3.shtml') \
+                        or (url.endswith('nd.shtml') and not urlt.endswith('nd3.shtml')):
                     parsecase2(getp, c, colltitle, title, author, date, urlt)
-                elif (url.endswith("ver.shtml") and not urlt.endswith('caecilium.shtml')) or url.endswith(
-                        'inventione.shtml') \
-                        or urlt.endswith('nd3.shtml') or url.endswith('off.shtml'):
+                elif (url.endswith("ver.shtml") and not urlt.endswith('caecilium.shtml')) \
+                        or url.endswith('inventione.shtml') or urlt.endswith('nd3.shtml') or url.endswith('off.shtml') \
+                        or url.endswith('inventione.shtml') or url.endswith('leg.shtml') or url.endswith('tusc.shtml'):
                     parsecase1(getp, c, colltitle, title, author, date, urlt)
-                elif urlt.endswith('fin4.shtml') or urlt.endswith('fin5.shtml'):
+                elif urlt.endswith('fin4.shtml') or urlt.endswith('fin5.shtml') or url.endswith('divinatione.shtml'):
                     parsecase3(getp, c, colltitle, title, author, date, urlt)
 
         for url in textsURL:
@@ -469,6 +513,8 @@ def main():
                 parsecase3(getp, c, colltitle, title, author, date, url)
             elif url in specialcases:
                 parsespecial(getp, c, colltitle, title, author, date, url)
+            elif url in poemList:
+                parsePoem(getp, c, colltitle, title, author, date, url)
 
     logger.info("Program runs successfully.")
 
