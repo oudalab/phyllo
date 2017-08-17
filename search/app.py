@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 import apsw
 import sqlitefts as fts
@@ -50,31 +51,30 @@ def setup():
     if rowcount[0][0] < 2 :
         logger.info("Recreating virtual table <'rowcount:{}, app.config?:{}>"
                     .format(rowcount, "cursor" in app.config))
+        rc1 = 0
+        rc2 = 0
         # Create the virtual table if it doesnt exist
         c.execute("CREATE VIRTUAL TABLE IF NOT EXISTS text_idx USING fts3 (id, title, book, author, date, chapter, verse, passage, link, documentType, tokenize={});".format("oulatin"))
         c.execute("CREATE VIRTUAL TABLE IF NOT EXISTS text_idx_porter USING fts3 (id, title, book, author, date, chapter, verse, passage, link, documentType, tokenize={});".format("porter"))
-        c.execute("INSERT INTO text_idx (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
-        c.execute("INSERT INTO text_idx_porter (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
+        rc1 += c.execute("INSERT INTO text_idx (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
+        rc2 += c.execute("INSERT INTO text_idx_porter (id, title, book, author, date, chapter, verse, passage, link, documentType) SELECT id, title, book, author, date, chapter, verse, passage, link, documentType FROM texts;")
         # Add the cursor to the app config
-        print('done insertion')
-        c.execute("SELECT id, title, book, author, link"
-             " FROM text_idx "
-             " WHERE text_idx MATCH 'cum'")
-        print(c.fetchall())
         app.config["cursor"] = c
+        logger.info("New cursor saved! Rows inserted {}, {} ".format(rc1, rc2))
 
     elif "cursor" not in app.config:
         logger.info("Recreating virtual table <'rowcount:{}, app.config?:{}>"
                     .format(rowcount, "cursor" in app.config))
         app.config["cursor"] = c
+        logger.info("New cursor saved!")
 
     else:
-        logger.info("Virtual Table already exists, skipping...")
+        logger.info("Virtual Table already exists, skipping setup...")
 
     return app.config["cursor"]
 
-
 def do_search(query):
+    """This is the old version that will soon be removed."""
     stmt1 = ("SELECT title, book, author, link"
              " FROM text_idx "
              " WHERE text_idx MATCH '{}';")
@@ -112,6 +112,73 @@ def do_search(query):
         return []
 
 
+def combine_results(rs1, rs2):
+    """Combine the results of two queries.
+       It created a dictionary where the group by
+       parameters are the keys and the snippet
+       is concatenated togther in a set.
+
+       Each result set should have the same format.
+       (rowid, title, book, author, link, snippet)
+
+       The dictionary will have the format
+       { (title, book, author, link): [snippet] }
+
+       The rowid will be lost. We can preserve it
+       later if necessary.
+    """
+    d = defaultdict(set)
+    for r in rs1:
+        t = (r[1], r[2], r[3], r[4])
+        d[t].add(r[4])
+
+    for r in rs2:
+        t = (r[1], r[2], r[3], r[4])
+        d[t].add(r[4])
+
+    return d
+
+
+def do_search_with_snippets(query):
+    # OULatin Parser
+    stmt1 = ("SELECT title, book, author, link,"
+             "  snippet(text_idx) as snippet,"
+             "  rank(matchinfo(text_idx)) as rank"
+             " FROM text_idx "
+             " WHERE text_idx MATCH '{}';")
+
+    # Porter Parser
+    stmt2 = ("SELECT title, book, author, link,"
+             "  snippet(text_idx_porter) as snippet,"
+             "  rank(matchinfo(text_idx_porter)) as rank"
+             " FROM text_idx_porter"
+             " WHERE text_idx_porter MATCH '{}';")
+
+    logger.info("Running the queries...")
+    if "cursor" in app.config:
+        logger.info("Running query 1...")
+        c.execute(stmt1.format(query))
+        r1 = list(c.fetchall())
+
+        logger.info("Running query 2...")
+        c.execute(stmt2.format(query))
+        r2 = list(c.fetchall())
+
+        # Union
+        logger.info("Combining Results...")
+        r3 = combine_results(r1, r2)
+
+        logger.info("OULatin size: {}, Porter size: {}, Union size: {}"
+                    .format(len(r1), len(r2), len(r3)))
+        logger.info("Total result set size: {}".format(len(r3)))
+        return r3
+
+    else:
+        logger.error("The cursor is not in app.config")
+        return {}
+
+
+
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     logger.info("/search {}|{}".format(request.args, request.method))
@@ -119,20 +186,13 @@ def search():
         query = request.args['q']
 
         logger.info("The query term is {}".format(query))
-        result = do_search(query)
-        return render_template('search.html', terms=query, results=result)
+        result = do_search_with_snippets(query)
+        return render_template('search_snippet.html', terms=query, results=result)
 
     else:
         logger.error("Could not make the query")
         return json.dumps([])
 
-
-@app.route('/helloworld')
-def hello_world():
-    print("Hello world")
-    #search.word_tokenizer
-    print("word_tokenizers")
-    return json.dumps({"name": "test"})
 
 @app.route('/')
 def application():
