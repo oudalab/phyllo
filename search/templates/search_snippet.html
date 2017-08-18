@@ -28,7 +28,7 @@
 
 <ul>
 {% if results %}
-    {% for hit, snippet in results %}
+    {% for hit, snippet in results.items() %}
     <div>
       <li> {{hit[0]}} | {{hit[1]}} | {{hit[2]}} | <a href="{{hit[3]}}"> {{hit[3] | safe}}</a>
       {% for s in snippet %}
