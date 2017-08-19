@@ -29,13 +29,15 @@
 <ul>
 {% if results %}
     {% for hit in results %}
-    <li> {{hit[0]}} | {{hit[1]}} | {{hit[2]}} | <a href="{{hit[3]}}"> {{hit[3] | safe}}</a>
+    <li> {{hit[0]}} | {{hit[1]}} | {{hit[2]}} | {{ hit[4] | safe}} | <a href="{{hit[3]}}"> {{hit[3] | safe}}</a>
     </li>
     {% endfor %}
 {% endif %}
 </ul>
-</div>
+ </div>
+
 
 {% endblock %}
+
 
 
