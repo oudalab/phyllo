@@ -12,7 +12,6 @@ from nltk.tokenize.punkt import PunktLanguageVars
 from cltk.tokenize.word import WordTokenizer
 from nltk.tokenize import WhitespaceTokenizer
 
-
 #latin tokenizer from cltk that has been updated to be compatible with the sql-fts-wrapper.
 class OUWordTokenizer(fts.Tokenizer):  # pylint: disable=too-few-public-methods
     """Tokenize according to rules specific to a given language."""
@@ -166,9 +165,12 @@ class OUWordTokenizer(fts.Tokenizer):  # pylint: disable=too-few-public-methods
 
     def tokenize(self, string):
         """Tokenize incoming string."""
+        # http://docs.cltk.org/en/latest/latin.html#word-tokenization
         #punkt = WhitespaceTokenizer()
-        punkt= PunktLanguageVars()
-        generic_tokens = punkt.word_tokenize(string)
+        word_tokenizer = WordTokenizer('latin')
+        #punkt= PunktLanguageVars()
+        #generic_tokens = punkt.word_tokenize(string)
+        generic_tokens = word_tokenizer.tokenize(string)
         generic_tokens = [x for item in generic_tokens for x in ([item] if item != 'nec' else ['c', 'ne'])] # Handle 'nec' as a special case.
         specific_tokens = []
         for generic_token in generic_tokens:

@@ -9,6 +9,7 @@ mkdir bld
 cd bld
 
 export CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
+-DSQLITE_ENABLE_ICU \
 -DSQLITE_ENABLE_DBSTAT_VTAB \
 -DSQLITE_ENABLE_FTS3 \
 -DSQLITE_ENABLE_FTS4 \
@@ -22,7 +23,7 @@ export CFLAGS="-DSQLITE_ENABLE_COLUMN_METADATA \
 -DSQLITE_TEMP_STORE=3 \
 -DSQLITE_ENABLE_FTS3_PARENTHESIS \
 -O2 \
--fPIC"
+-fPIC" 
 LIBS="-lm" ../sqlite/configure --prefix=$JQLITE --enable-static --enable-shared
 make
 make install
