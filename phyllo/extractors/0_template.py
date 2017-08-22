@@ -226,6 +226,7 @@ def parsePoem(ptags, c, colltitle, title, author, date, url):
                        verse, v, url, 'poetry'))
 
 
+
 def getBooks(soup):
     siteURL = 'http://www.thelatinlibrary.com'
     textsURL = []
@@ -244,7 +245,7 @@ def getBooks(soup):
 
 # main code
 def main():
-    # The collection URL below. In this example, we have a link to Cicero.
+    # The collection URL below and other information from the author's main page
     collURL = 'http://www.thelatinlibrary.com/cic.html'
     collOpen = urllib.request.urlopen(collURL)
     collSOUP = BeautifulSoup(collOpen, 'html5lib')
@@ -276,6 +277,5 @@ def main():
             # parsecase3(getp, c, colltitle, title, author, date, url)
 
     logger.info("Program runs successfully.")
-
 
 
