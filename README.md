@@ -21,3 +21,9 @@ __Initial build__:
 
 8) open a browser and enter the url: http://192.168.99.100:5000/
 
+![giphy 4](https://user-images.githubusercontent.com/22301958/29802172-5289c988-8c39-11e7-985d-7823ba5134d8.gif)
+
+
+
+
+
