@@ -23,6 +23,19 @@ __Initial build__:
 
 ![giphy 4](https://user-images.githubusercontent.com/22301958/29802172-5289c988-8c39-11e7-985d-7823ba5134d8.gif)
 
+## Type of searches that can be performed:
+
+1) The search engine works for any number of words and sentences
+2) __word*__: in the search gets all the documents where the '__word__' is a _prefix_. __*__ can be used multiple times like __word1* word2* word3*__
+3) __^word__: this search gets all the documents with sentences where '__word__' is the first word. can only be used once in a search
+4) __^word*__: this gets all the documents where is '__word__' is a _prefix_ of the first word in a sentence
+5) to search author names or book titles:
+   __author:name__ or  __title:name__ should be used
+6) the search __author:name word__ searches for the documents where the authored by the specified author and contains the specified word
+7) __word1 OR word2__:
+this kind of search results all the documents which contain either word1 or word2
+<more to be updated...> 
+
 
 
 
