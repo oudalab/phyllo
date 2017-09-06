@@ -8,9 +8,12 @@ __Initial build__:
 2) clone or download the files from the github repository
 
 ![giphy 1](https://user-images.githubusercontent.com/22301958/29801507-95345a9a-8c35-11e7-8f58-e87db341ad66.gif)
+
 3) unzip the zip file (if downloaded the file)
+
 4) In linux: open terminal and navigate to the unzipped directory with _cd_ command OR
    In Windows: open up the _docker quickstart terminal_ and navigate to the unzipped directory with _cd_ command
+   
 5) run __docker-compose up__ command
 
 ![giphy 2](https://user-images.githubusercontent.com/22301958/29801558-db012f6c-8c35-11e7-8e3f-b4ef46c94145.gif)
@@ -54,10 +57,15 @@ __^word*__: this gets all the documents where is '__word__' is a _prefix_ of the
 ![author-word](https://user-images.githubusercontent.com/22301958/30137257-15ef0b78-9328-11e7-897b-ee6afe8999c5.gif)
 
 ![book-word](https://user-images.githubusercontent.com/22301958/30137308-53e372a2-9328-11e7-80c4-cabd8e1cb4cb.gif)
+
 6) __author:name word*__ can also be used
+
 ![author star](https://user-images.githubusercontent.com/22301958/30137354-85b9d38e-9328-11e7-9be9-e405614e2d34.gif)
+
 7) Also __author:name ^word*__ can also be searched
+
 ![author](https://user-images.githubusercontent.com/22301958/30137389-b227b6e8-9328-11e7-8c88-7a191612f431.gif)
+
 8) __word1 OR word2__: this kind of search results all the documents which contain either word1 or word2
 
 ![or](https://user-images.githubusercontent.com/22301958/30137268-28bfc44a-9328-11e7-90fc-a71f916b6ef3.gif)
