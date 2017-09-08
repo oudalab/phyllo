@@ -195,4 +195,4 @@ if __name__ == '__main__':
     # Initialize the database 
     setup()
     logger.info("Starting app...")
-    app.run(host='0.0.0.0', port=5000, threaded=True, debug=True)
+    app.run(host='0.0.0.0', threaded=True, debug=True)
