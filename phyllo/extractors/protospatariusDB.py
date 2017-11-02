@@ -4,27 +4,13 @@ import re
 from urllib.request import urlopen
 from bs4 import BeautifulSoup, NavigableString
 
-import nltk
 
-nltk.download('punkt')
-
-from nltk import sent_tokenize
-
-def parseRes2(soup, title, url, cur, author, date, collectiontitle):
+def parsecase2(ptags, c, colltitle, title, author, date, URL):
+    # ptags contains all <p> tags. c is the cursor object.
     chapter = 0
-    sen = ""
-    num = 1
-    s1 = []
-    [e.extract() for e in soup.find_all('br')]
-    [e.extract() for e in soup.find_all('table')]
-    [e.extract() for e in soup.find_all('span')]
-    [e.extract() for e in soup.find_all('a')]
-    [e.replaceWith('9999') for e in soup.find_all('b')]
-    for x in soup.find_all():
-        if len(x.text) == 0:
-            x.extract()
-    getp = soup.find_all('p')
-    for p in getp:
+    verse = '-1'
+    # entry deletion is done in main()
+    for p in ptags:
         # make sure it's not a paragraph without the main text
         try:
             if p['class'][0].lower() in ['border', 'pagehead', 'shortborder', 'smallboarder', 'margin',
@@ -32,21 +18,16 @@ def parseRes2(soup, title, url, cur, author, date, collectiontitle):
                 continue
         except:
             pass
-
-        sen = p.text
-        sen = sen.strip()
-        chapter = sen[:11]
-        chapter = chapter.strip()
-        sen = sen[11:]
-        sentn = sen.strip()
-        print(collectiontitle)
-        print(title)
-        print(author)
-        print(date)
-        print(chapter)
-        print(num)
-        print(sentn)
-        print(url)
+        passage = p.get_text().strip()
+        if passage.startswith("Medieval"):
+            continue
+        # Skip empty paragraphs.
+        if len(passage) <= 0:
+            continue
+        chapter+=1
+        c.execute("INSERT INTO texts VALUES (?,?,?,?,?,?,?, ?, ?, ?, ?)",
+                  (None, colltitle, title, 'Latin', author, date, chapter,
+                   verse, passage, URL, 'prose'))
 
 
 def main():
@@ -70,7 +51,16 @@ def main():
         ' language TEXT, author TEXT, date TEXT, chapter TEXT, verse TEXT, passage TEXT,'
         ' link TEXT, documentType TEXT)')
         c.execute("DELETE FROM texts WHERE author = 'Protospatarius'")
-        parseRes2(biggsSOUP, title, biggsURL, c, author, date, collectiontitle)
+        textsURL = [biggsURL]
+        for url in textsURL:
+            openurl = urllib.request.urlopen(url)
+            textsoup = BeautifulSoup(openurl, 'html5lib')
+            try:
+                title = textsoup.title.string.split(':')[1].strip()
+            except:
+                title = textsoup.title.string.strip()
+            getp = textsoup.find_all('p')
+            parsecase2(getp, c, collectiontitle, title, author, date, url)
 
 
 if __name__ == '__main__':
