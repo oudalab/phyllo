@@ -32,6 +32,7 @@ COPY ./search/app.py /src
 COPY ./search/search.py /src
 COPY ./search/templates/* /src/templates/
 COPY ./phyllo/phyllo_logger.py /src
+COPY ./search/texts.db /src
 
 #RUN cd /src && bash buildcode.sh
 
@@ -42,7 +43,7 @@ ADD . /search
 RUN cd /phyllo/ && python3 setup.py install
 
 # Download the database file to /src
-RUN cd /src && python3 -c "import phyllo.data_extractor as d; d.main()"
+#RUN cd /src && python3 -c "import phyllo.data_extractor as d; d.main()"
 
 RUN ["chmod", "+x", "/src/app.py"]
 
