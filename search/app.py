@@ -1,8 +1,10 @@
 import json
 from collections import defaultdict
-
+import sqlite3
 import apsw
 import sqlitefts as fts
+import progressbar
+
 import os
 
 import search
@@ -25,12 +27,20 @@ from flask import Flask
 from flask import request
 
 from phyllo.phyllo_logger import logger
+import math
+from textblob import TextBlob as tb
+
+import gensim.downloader as api
+from gensim.models import TfidfModel
+from gensim.corpora import Dictionary
+
 
 
 app = Flask('Phyllo')
 Bootstrap(app)
 connection = apsw.Connection('texts.db', flags=apsw.SQLITE_OPEN_READWRITE)
 c = connection.cursor()
+bar = progressbar.ProgressBar()
 # Register with the connection
 fts.register_tokenizer(connection,
                        'oulatin',
@@ -62,7 +72,7 @@ def setup():
         logger.info("Inserted rows into text_idx_porter")
 
         # Add the cursor to the app config
-        app.config["cursor"] = c
+        #app.config["cursor"] = c
         logger.info("New cursor saved!")
 
     elif "cursor" not in app.config:
@@ -76,7 +86,50 @@ def setup():
 
     return app.config["cursor"]
 
+#to divide the document into words
+def chunkIt(seq, num):
+    avg = len(seq) / float(num)
+    out = []
+    last = 0.0
 
+    while last < len(seq):
+        out.append(seq[int(last):int(last + avg)])
+        last += avg
+
+    return out
+
+#to get the tfidf for the whole documents
+def word_count():
+    c.execute("CREATE TABLE IF NOT EXISTS tfidf_count(word TEXT, tfidf REAL);")
+
+    f = open('words_cleaned.txt', 'r', encoding='utf-8')
+    s = f.read()
+    s1 = s.split(' ')
+    s2 = chunkIt(s1, 10000)
+    print(len(s2))
+    #print(type(s))
+
+    dct = Dictionary(s2) # fit dictionary
+    corpus = [dct.doc2bow(line) for line in s2]  # convert dataset to BoW format
+
+    model = TfidfModel(corpus)  # fit model
+    vector = model[corpus]  # apply model
+    d = {}
+    for doc in bar(vector):
+        for id, value in doc:
+            word = dct.get(id)
+            d[word] = value
+    for word, value in bar(d.items()):
+        c.execute("INSERT INTO tfidf_count VALUES (?,?)", (word, round(value, 5)))
+
+#create a fts table with just the words
+def create_idx():
+    c.execute("CREATE VIRTUAL TABLE IF NOT EXISTS word_results USING fts4 (word TEXT)")
+    print("word_results virtual table is created.")
+    c.execute("INSERT INTO word_results (word) SELECT word FROM tfidf_count;")
+    print("data inserted into word_results virtual table")
+
+#combining the search results from porter and oulatin
 def combine_results(rs1, rs2):
     """Combine the results of two queries.
        It created a dictionary where the group by
@@ -103,7 +156,7 @@ def combine_results(rs1, rs2):
 
     return d
 
-
+#search function
 def do_search_with_snippets(query):
     # OULatin Parser
     # TODO: add a ranking function: "  rank(matchinfo(text_idx)) as rank"
@@ -126,12 +179,14 @@ def do_search_with_snippets(query):
 
     if "cursor" in app.config:
         logger.info("Running query 1...")
+        print('stmt1 execute')
         c.execute(stmt1.format(query))
         r1 = []
         while True:
             try:
                 try:
                     row = next(c)
+                    print(row)
                     r1.append(row)
                 except UnicodeDecodeError as e:
                     logger.error("Unicode Decode error {}".format(e))
@@ -142,10 +197,12 @@ def do_search_with_snippets(query):
         logger.info("Running query 2...")
         c.execute(stmt2.format(query))
         r2 = []
+
         while True:
             try:
                 try:
                     row = next(c)
+                    print(row)
                     r2.append(row)
                 except UnicodeDecodeError as e:
                     logger.error("Unicode Decode error {}".format(e))
@@ -185,14 +242,16 @@ def search():
         return json.dumps([])
 
 
-@app.route('/')
+#@app.route('/')
 def application():
-    setup()
+    #setup()
     return render_template('search.html', terms='', results='')
 
 
 if __name__ == '__main__':
     # Initialize the database 
     setup()
+    #word_count() #call only to get the tfidf count
+    #create_idx() #call after tfidfcount is created to create the fts for the words
     logger.info("Starting app...")
     app.run(host='0.0.0.0', threaded=True, debug=True)
