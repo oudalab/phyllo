@@ -242,7 +242,7 @@ def search():
         return json.dumps([])
 
 
-#@app.route('/')
+@app.route('/')
 def application():
     #setup()
     return render_template('search.html', terms='', results='')
