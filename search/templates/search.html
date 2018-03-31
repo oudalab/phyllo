@@ -2,38 +2,59 @@
 
 {% block title %} The Latin Library Search {% endblock %}
 
+
 {% block styles %}
 {{super()}}
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 {% endblock %}
 
 
-{% block content %}
+{% block body %}
+<head>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript">
+      var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  $(function() {
+    var submit_form = function(e) {
+      $.getJSON($SCRIPT_ROOT + '/search', {
+        q: $('input[name="q"]').val()
+      }, function(data) {
+        $(data).each(function(i,v){
+            var s = "<li>"+v[0]+" | "+v[1]+" | "+v[2]+" | <a href="+v[3]+">"+v[3]+"</a> | </li>"
+            $('.result').append(s)
+        });
+      });
+      return false;
+    };
+
+    $('a#submit').bind('click', submit_form);
+
+    $('input[type=text]').bind('keyup', function(e) {
+      if (e.keyCode) {
+          $('.result').empty()
+        submit_form(e);
+      }
+    });
+  });
+</script>
+</head>
 <div class="container">
     <h1>Search engine for The Latin Library</h1>
-    <form action={{ url_for('search') }}>
+    <form>
         <div class="row">
             <div class="form-group">
                 <label for="code">search with author name, book title or sentence</label>
-                <input class="form-control input-lg" type="search" name="q" value="{{terms}}">
+                <input class="form-control input-lg" type="text" name="q" id = "query">
             </div>
         </div>
 
         <div class="row">
-            <button type="submit" class="btn btn-default">Submit</button>
+            <button id="search" type="submit" class="btn btn-default">Submit</button>
         </div>
     </form>
 
     <hr/>
-
-<ul>
-{% if results %}
-    {% for hit in results %}
-    <li> {{hit[0]}} | {{hit[1]}} | {{hit[2]}} | {{ hit[4] | safe}} | <a href="{{hit[3]}}"> {{hit[3] | safe}}</a>
-    </li>
-    {% endfor %}
-{% endif %}
-</ul>
+<div class="result"></div>
  </div>
 
 
