@@ -3,7 +3,7 @@ from collections import defaultdict
 import sqlite3
 import apsw
 import sqlitefts as fts
-import progressbar
+#import progressbar
 
 import os
 
@@ -27,12 +27,12 @@ from flask import Flask
 from flask import request
 
 from phyllo.phyllo_logger import logger
-import math
-from textblob import TextBlob as tb
+#import math
+#from textblob import TextBlob as tb
 
-import gensim.downloader as api
-from gensim.models import TfidfModel
-from gensim.corpora import Dictionary
+#import gensim.downloader as api
+#from gensim.models import TfidfModel
+#from gensim.corpora import Dictionary
 
 
 
@@ -40,7 +40,7 @@ app = Flask('Phyllo')
 Bootstrap(app)
 connection = apsw.Connection('texts.db', flags=apsw.SQLITE_OPEN_READWRITE)
 c = connection.cursor()
-bar = progressbar.ProgressBar()
+#bar = progressbar.ProgressBar()
 # Register with the connection
 fts.register_tokenizer(connection,
                        'oulatin',
@@ -148,11 +148,11 @@ def combine_results(rs1, rs2):
     d = defaultdict(set)
     for r in rs1:
         t = (r[0], r[1], r[2], r[3])
-        d[t].add(r[4])
+        d[t].add(str(r[4]))
 
     for r in rs2:
         t = (r[0], r[1], r[2], r[3])
-        d[t].add(r[4])
+        d[t].add(str(r[4]))
 
     return d
 
@@ -179,14 +179,12 @@ def do_search_with_snippets(query):
 
     if "cursor" in app.config:
         logger.info("Running query 1...")
-        print('stmt1 execute')
         c.execute(stmt1.format(query))
         r1 = []
         while True:
             try:
                 try:
-                    row = next(c)
-                    print(row)
+                    row = list(next(c))
                     r1.append(row)
                 except UnicodeDecodeError as e:
                     logger.error("Unicode Decode error {}".format(e))
@@ -202,7 +200,6 @@ def do_search_with_snippets(query):
             try:
                 try:
                     row = next(c)
-                    print(row)
                     r2.append(row)
                 except UnicodeDecodeError as e:
                     logger.error("Unicode Decode error {}".format(e))
@@ -224,6 +221,12 @@ def do_search_with_snippets(query):
         logger.error("The cursor is not in app.config -- second try failed.")
         return {}
 
+def get_word(query):
+    word = str(query)+'*'
+    stmt="SELECT word FROM word_results WHERE word_results MATCH '{}';"
+    c.execute(stmt.format(word))
+    r=next(c)
+    return r[0]
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -231,11 +234,23 @@ def search():
     logger.info("/search {}|{}".format(request.args, request.method))
     if request.method == 'GET' and request.args['q'] is not None:
         query = request.args['q']
-
-        logger.info("The query term is {}".format(query))
-        result = do_search_with_snippets(query)
-        logger.info(list(result.items())[0:10])
-        return render_template('search_snippet.html', terms=query, results=result)
+        if ' ' not in str(query):
+            word = str(get_word(query))
+            if word != '' or word != None:
+                logger.info("The query term is {}".format(word))
+                result = do_search_with_snippets(word)
+                logger.info(list(result.items())[0:10])
+                return jsonify(list(result))
+            else:
+                logger.info("The query term is {}".format(query))
+                result = do_search_with_snippets(query)
+                logger.info(list(result.items())[0:10])
+                return jsonify(list(result))
+        else:
+            logger.info("The query term is {}".format(query))
+            result = do_search_with_snippets(query)
+            logger.info(list(result.items())[0:10])
+            return jsonify(list(result))
 
     else:
         logger.error("Could not make the query")
@@ -250,7 +265,7 @@ def application():
 
 if __name__ == '__main__':
     # Initialize the database 
-    setup()
+    #setup()
     #word_count() #call only to get the tfidf count
     #create_idx() #call after tfidfcount is created to create the fts for the words
     logger.info("Starting app...")
