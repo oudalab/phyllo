@@ -270,4 +270,4 @@ if __name__ == '__main__':
     #word_count() #call only to get the tfidf count
     #create_idx() #call after tfidfcount is created to create the fts for the words
     logger.info("Starting app...")
-    app.run(threaded=True, debug=True)
+    app.run(host='0.0.0.0', threaded=True, debug=True)
